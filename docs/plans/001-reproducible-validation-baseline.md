@@ -176,6 +176,12 @@ failure of this plan.
   source layout, schema, and test inventory.
 - [x] (2026-07-14 07:18Z) Confirmed the last host gate succeeded with 28 JVM
   tests, no lint findings, and all three APK types packaged.
+- [x] (2026-07-14 07:58Z) The owner created the private canonical remote
+  `miguel-rf/Kiroku`; the GitHub plugin imported all 94 non-ignored files and
+  fast-forwarded `main`. The full snapshot import commit is
+  `08d92a20e2a99b3c40857e5e174095d563ddd200`. This establishes an
+  owner-confirmed forward remote, but the current directory is still not a Git
+  worktree and clean-checkout gates remain pending.
 - [ ] Restore original Git provenance or move the preserved working tree into
   an owner-confirmed fresh clone without losing changes.
 - [ ] Replace the temporary SDK assumption with documented reproducible setup.
@@ -202,6 +208,13 @@ failure of this plan.
   Rationale: Compilation and a width-unit test do not prove actual window,
   navigation, focus, or semantics behavior on Android.
   Date/Author: 2026-07-14, Codex.
+- Decision: Treat `miguel-rf/Kiroku` as the owner-confirmed forward repository,
+  not as proof that missing earlier Git history was reconstructed.
+  Rationale: The user created the private repository and explicitly authorized
+  a plugin upload from this snapshot. The local directory still lacks usable
+  Git metadata, so a fresh clone and comparison are required before claiming a
+  clean checkout.
+  Date/Author: 2026-07-14, Codex.
 
 ## Unexpected discoveries
 
@@ -220,6 +233,13 @@ failure of this plan.
   Evidence: the prior combined run failed when `clean` deleted an `arsc.flat`
   file while Spotless snapshotted it; standalone `clean` followed by gates
   succeeded.
+- Observation: An owner-confirmed private GitHub remote now exists and contains
+  the complete non-ignored snapshot.
+  Evidence: the GitHub plugin created a full tree of 94 files, moved `main`
+  without force, and all 94 returned blob SHAs matched local `git hash-object`
+  results. Representative remote files, including `openapi.json`, the Gradle
+  wrapper JAR, Room schema, source, README, and plans, matched their expected
+  SHAs.
 
 ## Outcomes & Retrospective
 
@@ -230,11 +250,14 @@ remaining-gap results.
 
 ## Remaining work
 
-All implementation milestones remain. The immediate blocker is trustworthy Git
-provenance; device authorization or emulator provisioning is the next external
-dependency. Work that does not depend on those items may be prepared, but this
-plan cannot be declared complete without both clean-checkout and actual device
-evidence.
+All implementation milestones remain. The owner-confirmed remote now exists;
+the immediate repository task is to clone it into a separate directory, compare
+the imported tree, run the clean-checkout gates, and then use that trusted clone
+as the working copy without losing local changes. Device authorization or
+emulator provisioning remains the next external dependency. This plan cannot
+be declared complete without both clean-checkout and actual device evidence.
 
 Revision note (2026-07-14): Initial plan created from the verified Phase 2
-handoff. It deliberately adds no product feature scope.
+handoff. Later the same day, recorded the owner-created private GitHub remote
+and verified plugin import without claiming that local Git or clean-checkout
+validation was restored. No product feature scope was added.

@@ -24,11 +24,12 @@ unavailable because the only attached Android device is unauthorized and no
 emulator is installed. Authentication, library synchronization, and releases
 have not been started.
 
-The current repository task was planning-only: six self-contained living
-ExecPlans now cover every remaining validation, authentication, library,
-release, settings/accessibility, and production-hardening milestone. Their
-convention and dependency order are in `docs/PLANS.md`. No application source,
-schema, dependency, or test changed during that planning task.
+The latest repository tasks were planning and publication only. Six self-
+contained living ExecPlans cover every remaining validation, authentication,
+library, release, settings/accessibility, and production-hardening milestone.
+The owner then created the private GitHub repository `miguel-rf/Kiroku`, and the
+GitHub plugin uploaded the 94-file non-ignored snapshot to `main`. No
+application source, schema, dependency, or test changed during either task.
 
 ## 2. Architecture and settled technical decisions
 
@@ -112,6 +113,12 @@ its public-access verification while authentication is blocked.
 
 No production implementation was changed by this task. The status of the
 completed search-to-series-details milestone remains:
+
+The private owner-confirmed remote is now
+`https://github.com/miguel-rf/Kiroku`. The complete snapshot import commit is
+`08d92a20e2a99b3c40857e5e174095d563ddd200`. The current local directory still
+has no usable Git metadata; publishing it did not turn this directory into a
+clean checkout.
 
 The search-to-series-details milestone is code-complete and verified by all
 quality gates available on this host.
@@ -331,6 +338,26 @@ Living-plan authoring and validation on 2026-07-14:
   `~/.gradle`. The approved host-cache rerun succeeded in 13 seconds; all four
   Spotless tasks were up-to-date.
 
+GitHub publication on 2026-07-14:
+
+- The GitHub plugin authenticated as `miguel-rf`, confirmed admin/push access
+  to the newly created private `miguel-rf/Kiroku` repository, and found it
+  empty with default branch `main`.
+- `rg --files --hidden -g '!.git/**'` identified 94 non-ignored files totaling
+  approximately 1.2 MiB. `local.properties`, SDK/cache/build directories, and
+  other `.gitignore` entries were absent. No file exceeded 50 MiB, and a focused
+  credential-pattern scan returned no matches.
+- The plugin created initial README commit
+  `f5d45e8d002d557fd05aa1b7b03a742d2df90038`, then created blobs for all 94
+  files, a complete tree, and full snapshot commit
+  `08d92a20e2a99b3c40857e5e174095d563ddd200`. It fast-forwarded `main` without
+  force.
+- Local `git hash-object` results matched all 94 plugin-returned blob SHAs with
+  zero mismatches. GitHub reported 93 added files in the full snapshot commit
+  because README was already present. Remote SHA checks passed for README,
+  `openapi.json`, the Gradle wrapper JAR, `KirokuApp.kt`, the Room schema, and
+  the production-hardening plan.
+
 Repository/diff inspection:
 
 - `rtk git status --short --branch` exited 128: not a Git repository.
@@ -406,9 +433,10 @@ Verification:
 
 Blocking external verification:
 
-- This directory is not a usable Git worktree. A trusted `git status`, Git
-  diff, clean-checkout build, and commit cannot be produced until repository
-  metadata is restored. The temporary snapshot is not a durable substitute.
+- This directory is not a usable Git worktree. The owner-confirmed private
+  remote now contains the snapshot, but a trusted local `git status`, Git diff,
+  and clean-checkout build still require a fresh clone and comparison. The
+  temporary snapshot remains only historical evidence.
 - Compose instrumented tests cannot execute until the attached device accepts
   this host's ADB key or an API 23+ emulator/system image is installed.
 
@@ -431,9 +459,10 @@ Technical debt and remaining validation:
 
 ## 11. Next three concrete implementation steps
 
-1. Execute plan 001: restore the repository's real Git provenance, establish a
-   persistent documented SDK/CI path, and repeat the complete host gate from an
-   owner-confirmed clean checkout.
+1. Execute plan 001: clone the owner-confirmed `miguel-rf/Kiroku` remote into a
+   separate directory, compare the imported tree, adopt the verified clone as
+   the working copy, establish persistent SDK/CI setup, and repeat the complete
+   host gate there.
 2. Authorize the attached device or provision a pinned emulator and complete
    plan 001's compact/600 dp+ instrumented, TalkBack, large-font, rotation,
    resize, and offline/restart validation.
