@@ -50,6 +50,16 @@ then regenerated all ten suites in 50 seconds: 28 tests, zero failures, errors,
 or skips. Lint reports `No issues found.`, all three APKs are valid archives,
 Room schema version 1 is unchanged, and the checkout remained Git-clean.
 
+Corrected hosted-validation implementation
+`99f68c9cf73f3422bc3b138928899ea50701cb55` was also exercised locally with
+Android Platform 37.1 present to match the hosted image's newer-platform drift.
+The exact host gate completed in 1 minute 8 seconds; the regenerated ten JVM
+suites contain 28 tests with zero failures, errors, or skips, lint reports
+exactly `No issues found.`, and all three APKs are non-empty. Only
+runner-image-dependent lint issue `OldTargetApi` is suppressed while this
+baseline intentionally pins target SDK 36; every other lint finding remains
+subject to the exact zero-findings assertion.
+
 The JVM suites cover DTOs, mappers, Room DAOs/relations, repository caching,
 Paging `RemoteMediator`, ViewModel transitions/debounce, root navigation/layout
 decisions, and MockWebServer request/error behavior.
@@ -97,19 +107,32 @@ and remained reachable by scrolling. With TalkBack bound and touch exploration
 enabled, accessibility focus reached the labelled search field and the labelled
 Back action on details; the emulator was restored afterward.
 
-The workflow is structurally validated locally. Its first hosted run,
-`29332138612`, stopped before Gradle or emulator execution because the current
-Ubuntu 24.04 image does not put its installed `sdkmanager` on the shell command
-path. The workflow now invokes the image-manifested Command Line Tools 12.0
-binary by absolute SDK path and exports that directory to subsequent steps. A
-second run, `29332720434`, proved that fix and booted the requested compact and
-large profiles, but android-emulator-runner split the multi-line `script:` input
-into independent shells before Gradle. The device command is now the single
-`sh scripts/ci-device-test.sh` invocation. That checked-in script passes
-`sh -n`; a controlled fake-device harness accepted the expected 411 dp and
-1280 dp profiles and rejected a 411 dp device labelled large. A successful
-hosted rerun is still required before Plan 001 is complete and must not be
-inferred from local results.
+The hosted chronology is complete. Run `29332138612` stopped before Gradle or
+emulator execution because Ubuntu's installed `sdkmanager` was not on the shell
+path; the workflow now invokes the image-manifested Command Line Tools binary
+by absolute path. Run `29332720434` proved that fix and both emulator profiles,
+then exposed android-emulator-runner's per-line shell behavior; the device
+command became the single checked-in `sh scripts/ci-device-test.sh` invocation.
+Run `29333616527` completed both device jobs green and the full host Gradle gate,
+then exposed an exact-report mismatch caused by preinstalled Platforms 37/37.1
+adding nonfatal `OldTargetApi` for pinned target 36. That behavior was
+reproduced locally and narrowed without weakening other lint checks.
+
+Final hosted run
+[`29335569517`](https://github.com/miguel-rf/Kiroku/actions/runs/29335569517)
+at commit `99f68c9cf73f3422bc3b138928899ea50701cb55` passed all three jobs:
+
+- Host: `BUILD SUCCESSFUL in 13m 5s`; 148 actionable tasks (138 executed, 10
+  from cache), followed by successful exact lint and non-empty debug,
+  Android-test, and minified release APK verification.
+- Compact: `1080px at 420dpi = 411dp wide`; 9/9 tests finished and `BUILD
+  SUCCESSFUL in 12m 23s`.
+- Large: `2560px at 320dpi = 1280dp wide`; 9/9 tests finished and `BUILD
+  SUCCESSFUL in 15m 28s`.
+
+The matrix emitted only non-failing cache-reservation annotations when parallel
+device jobs attempted to save the same Gradle cache key; every job conclusion
+was `success`.
 
 ## First vertical slice matrix
 

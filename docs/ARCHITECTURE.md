@@ -35,13 +35,15 @@ or entity crosses into Compose.
 
 ## Implementation checkpoint
 
-The public search/detail vertical slice is implemented and verified on every
-host-executable gate. `MainActivity` launches the Navigation 3/adaptive host;
-the manual container, network layer, generated Room version-1 schema,
-repository/mediator, ViewModels, and Compose screens compile in debug and
-minified release variants. Twenty-eight JVM tests pass, lint reports no issues,
-and the three Compose test classes compile and package. Device execution is not
-claimed because the attached device is unauthorized and no emulator exists.
+The public search/detail vertical slice is implemented and verified by clean
+local and hosted host/device gates. `MainActivity` launches the Navigation
+3/adaptive host; the manual container, network layer, generated Room version-1
+schema, repository/mediator, ViewModels, and Compose screens compile in debug
+and minified release variants. Twenty-eight JVM tests pass, lint reports no
+issues, and four instrumented classes contain nine tests that pass on separate
+API 36 compact and large emulator profiles. Corrected commit
+`99f68c9cf73f3422bc3b138928899ea50701cb55` passed the complete hosted matrix in
+[run 29335569517](https://github.com/miguel-rf/Kiroku/actions/runs/29335569517).
 PROJECT_STATE.md is the authoritative handoff and command record.
 
 ## Data and state flow

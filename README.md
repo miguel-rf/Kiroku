@@ -18,13 +18,18 @@ search-to-series-details slice are complete. The app has compact and adaptive
 list/detail navigation, Room-backed search/detail caching, and deterministic
 JVM/integration tests. Nine instrumented tests pass on independent API 36 Pixel
 2 and Pixel Tablet emulator profiles, including saved-state, offline/retry, and
-on-device Room persistence coverage. Plan 001 is closing the baseline with a
-clean-validated candidate and pending hosted CI evidence. See
+on-device Room persistence coverage. Plan 001's reproducible validation
+baseline is complete: the clean candidate passed the host and separate
+compact/large gates, and corrected commit
+`99f68c9cf73f3422bc3b138928899ea50701cb55` passed every hosted job in
+[run 29335569517](https://github.com/miguel-rf/Kiroku/actions/runs/29335569517).
+See
 [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md) for exact evidence and
 [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) for roadmap status. Remaining work
 is organized as self-contained living ExecPlans in
-[docs/PLANS.md](docs/PLANS.md); start with the earliest uncompleted numbered
-plan under `docs/plans/`.
+[docs/PLANS.md](docs/PLANS.md); start with the earliest executable uncompleted
+numbered plan under `docs/plans/`. Plan 002 is contract-blocked, so Plan 004's
+explicitly permitted public-access scope is currently next.
 
 All foundation library choices were re-audited through the project-configured
 Context7 server after it became available. The resolved documentation sources,
@@ -137,10 +142,9 @@ rules are in [docs/SECURITY.md](docs/SECURITY.md).
   bearer token, so that field must be confirmed before implementation.
 - No numeric API rate limit is published. Kiroku caches aggressively and avoids
   speculative or duplicate requests.
-- Compact and large emulator validation is green locally; the first hosted
-  compact/large GitHub Actions matrix must still pass before Plan 001 closes.
-  The attached Realme is authorized but can remain behind a dozing/locked
-  surface, so local acceptance commands pin a known-interactive emulator.
+- The attached Realme is authorized but can remain behind a dozing/locked
+  surface, so local connected-test acceptance commands pin a known-interactive
+  emulator with `ANDROID_SERIAL`.
 - Context7 MCP 3.2.3 is pinned in the project configuration and has been used
   for version-sensitive library decisions. If first added while a Codex CLI or
   IDE session is already running, that session may need a restart for tool

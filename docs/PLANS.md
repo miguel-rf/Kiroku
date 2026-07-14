@@ -47,15 +47,21 @@ process death, rotation/resize, Back, TalkBack, and large text. Plan 001
 milestone 1 restored the owner-confirmed Git worktree at commit
 `6d33474b79db5592bf4b6458e7e9ab54b50ddb23`. Milestone 2 documented persistent
 SDK setup and added the pinned host workflow; Milestone 3 completed device and
-accessibility validation. The workflow now includes separate compact/large
-emulator jobs. The committed candidate passes fresh-checkout host, compact, and
-large gates and is published. Its first hosted run stopped before project tests
-because the image-installed Android SDK manager was not on the job command
-path. The second hosted run proved the image-manifest-based correction and
-booted both emulator profiles, then exposed the emulator action's per-line
-script semantics before Gradle. The device logic is now one checked-in shell
-script command, so no successful remote result is claimed. The detailed
-evidence is embedded in plan 001 and `docs/PROJECT_STATE.md`.
+accessibility validation; Milestone 4 completed the clean-checkout and hosted
+baseline. Corrected commit `99f68c9cf73f3422bc3b138928899ea50701cb55`
+passed all three jobs in
+[run 29335569517](https://github.com/miguel-rf/Kiroku/actions/runs/29335569517).
+The host job completed in 13m35s: Gradle reported `BUILD SUCCESSFUL in 13m 5s`
+for 148 actionable tasks (138 executed, ten restored from cache), and the exact
+lint plus three-APK verifier passed. The compact job measured 1080 px at 420 dpi
+(411 dp),
+finished all nine tests, and reported `BUILD SUCCESSFUL in 12m 23s`; the large
+job measured 2560 px at 320 dpi (1280 dp), finished all nine tests, and reported
+`BUILD SUCCESSFUL in 15m 28s`. Earlier hosted attempts exposed the runner SDK
+command path, the emulator action's per-line script behavior, and lint output
+drift from preinstalled newer platforms. Their narrow corrections are retained
+in the workflow, checked-in device script, and lint policy. Plan 001 is complete;
+its detailed evidence is embedded in that plan and `docs/PROJECT_STATE.md`.
 
 The existing app is one Gradle application module, uses a manual `AppContainer`,
 keeps Room as the source of truth, separates DTO/entity/domain/UI models, and
@@ -64,8 +70,9 @@ decisions remain in force unless a numbered plan records new evidence.
 
 ## Plan order and dependencies
 
-1. `docs/plans/001-reproducible-validation-baseline.md` restores a trustworthy
-   source-control/build/device validation baseline and adds CI. Start here.
+1. `docs/plans/001-reproducible-validation-baseline.md` restored a trustworthy
+   source-control/build/device validation baseline and added CI. Completed on
+   2026-07-14; retain it as the validation baseline for later plans.
 2. `docs/plans/002-authentication-secure-session.md` implements login, secure
    session restoration, expiry, and logout. It is blocked until the official
    login success token shape is confirmed.
@@ -81,6 +88,9 @@ decisions remain in force unless a numbered plan records new evidence.
 6. `docs/plans/006-production-hardening-release.md` performs migration,
    security, performance, baseline-profile, macrobenchmark, release, and
    clean-checkout hardening. Execute it last.
+
+With Plan 001 complete and Plan 002 contract-blocked, the earliest executable
+scope is Plan 004's explicitly permitted public-access work.
 
 Plans 003 and 004 must not both change the Room version from the same baseline.
 If releases are implemented before library work because authentication remains
@@ -108,4 +118,8 @@ candidate's green fresh-checkout host/compact/large gates, its publication, and
 the first hosted run's pre-test SDK command-path failure. The narrow correction
 is based on the exact runner-image manifest. Later recorded the second run's
 successful SDK/emulator setup, per-line action-script failure, and checked-in
-single-command correction; a green hosted rerun remains required.
+single-command correction. Later recorded both green device jobs and the host
+lint-report mismatch in the next run, the narrow runner-image-dependent lint
+correction, and the final all-green host/compact/large matrix at immutable
+commit `99f68c9cf73f3422bc3b138928899ea50701cb55` in run `29335569517`.
+Plan 001 is complete with no remaining work.

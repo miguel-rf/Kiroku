@@ -2,9 +2,9 @@
 
 Last updated: 2026-07-14
 
-This is the authoritative, self-contained handoff. It distinguishes verified
-build/test evidence from work that still needs hosted-CI evidence, and from
-later work blocked on additional MangaUpdates contracts.
+This is the authoritative, self-contained handoff. It distinguishes the
+completed Plan 001 local and hosted validation baseline from later work blocked
+on additional MangaUpdates contracts.
 
 ## 1. Current project objective
 
@@ -24,20 +24,14 @@ tests that pass on separate compact and large API 36 emulator profiles and on
 the compact profile at 200% font scale. Authentication, library
 synchronization, and releases have not been started.
 
-The active repository task is Plan 001 Milestone 4. Six self-contained living
-ExecPlans cover every remaining validation,
-authentication, library, release, settings/accessibility, and
-production-hardening milestone. The owner-created private repository
-`miguel-rf/Kiroku` supplies the verified Git metadata at
-`6d33474b79db5592bf4b6458e7e9ab54b50ddb23`. Milestones 1 through 3 restored
-provenance, established persistent SDK/host CI, and completed the compact,
-large, resilience, and accessibility matrix. Milestone 4 has a statically
-validated compact/large emulator workflow plus green working-tree and
-clean-candidate gates. The candidate is published; its first hosted run exposed
-a pre-test SDK command-path defect, and its second proved that correction before
-exposing the emulator action's per-line script semantics. Both are corrected
-locally. A successful hosted rerun and final synchronized handoff remain before
-closure.
+Plan 001 is complete. Its four milestones restored provenance, established a
+persistent SDK and pinned CI, completed compact/large resilience and
+accessibility validation, and finished with an all-green hosted matrix at
+commit `99f68c9cf73f3422bc3b138928899ea50701cb55` in run `29335569517`.
+Plan 002 remains blocked on the official login token/expiry shape, and Plan 003
+depends on it. The earliest currently executable numbered work is Plan 004's
+explicitly permitted public-access portion; authenticated release behavior
+must still wait for Plan 002.
 
 ## 2. Architecture and settled technical decisions
 
@@ -120,13 +114,13 @@ closure.
 
 ## 4. Current task and exact implementation status
 
-Plan 001 milestones 1 through 3 are complete. `docs/PLANS.md` indexes six numbered
-plans under `docs/plans/`, each with the confirmed contracts, existing-code
-entry points, architecture, database impact, milestones, testing requirements,
-progress, decisions, discoveries, remaining work, and revision history needed
-by a new agent. Plan 001 Milestone 4 is active; plan 002 is blocked on the
-official login response shape, and plan 003 depends on it. Plan 004 permits only
-its public-access verification while authentication is blocked.
+Plan 001 and all four of its milestones are complete. `docs/PLANS.md` indexes
+six numbered plans under `docs/plans/`, each with the confirmed contracts,
+existing-code entry points, architecture, database impact, milestones, testing
+requirements, progress, decisions, discoveries, remaining work, and revision
+history needed by a new agent. Plan 002 is blocked on the official login
+response shape, Plan 003 depends on it, and Plan 004 permits its public-access
+work while authentication remains blocked.
 
 Milestone 2 added `.github/workflows/ci.yml`, updated `README.md`, and refreshed
 the living handoff. Milestone 3 made narrow test-only determinism corrections,
@@ -134,13 +128,13 @@ added saved-state/offline and on-device Room persistence coverage, provisioned
 independent Pixel 2/Pixel Tablet AVDs, and completed the manual resilience and
 accessibility matrix without changing production implementation, dependencies,
 or the database schema. The workflow now includes both emulator profiles. The
-final committed candidate passes clean-checkout host, compact, and large gates
-and is published. Hosted run `29332138612` stopped before project tests because
-`sdkmanager` was not on the Ubuntu image's command path; a correction based on
-that exact image's official manifest is published. Run `29332720434` passed SDK
-setup and booted both emulator profiles, but split the multi-line action script
-into independent shells before Gradle. The device logic is now one checked-in
-shell-script command, so no remote CI success is claimed yet.
+clean local candidate passes host, compact, and large gates. Hosted runs
+`29332138612`, `29332720434`, and `29333616527` successively exposed the Ubuntu
+SDK command path, the emulator action's per-line shell behavior, and
+runner-image-dependent `OldTargetApi` output. Those narrow defects were
+corrected without changing production source, dependencies, or Room schema.
+Corrected commit `99f68c9cf73f3422bc3b138928899ea50701cb55`
+passed all three jobs in hosted run `29335569517`.
 
 The status of the completed search-to-series-details milestone remains:
 
@@ -153,13 +147,15 @@ its index and ignore rules, and supplied the adopted Git metadata. Milestone 2's
 clean validation candidate was commit
 `31d55c41c4947db327654ed9d32536ed4fcb9e7c`, with tree
 `cc65ee5e41034ca5a19fda21377bda4d65f37c5d`; its checkout was clean before and
-after the complete host gate. The complete Plan 001 candidate is
+after the complete host gate. Plan 001's clean local validation candidate is
 `5093d60d9092e24f785c82c98c44568e636979f3`, tree
 `29a1c1363d236703bbf198577cb7410d9d3fbeea`; its separate clean clone passed
-the final host, compact, and large gates and remained Git-clean.
+the host, compact, and large gates and remained Git-clean. The corrected hosted
+validation implementation is `99f68c9cf73f3422bc3b138928899ea50701cb55`,
+which passed the complete GitHub Actions matrix in run `29335569517`.
 
-The search-to-series-details milestone is code-complete and verified by all
-working-tree quality gates available on this host.
+The search-to-series-details milestone is code-complete and verified by the
+clean local host/device gates and the hosted host/compact/large matrix.
 
 - `MainActivity` launches `KirokuApp`.
 - `SearchRoute` and `SeriesRoute(Long)` use `rememberNavBackStack` and
@@ -191,6 +187,7 @@ The 2026-07-14 planning and Plan 001 infrastructure tasks added or updated:
 - `.github/workflows/ci.yml`
 - `AGENTS.md`
 - `README.md`
+- `app/build.gradle.kts`
 - `docs/PLANS.md`
 - `docs/PROJECT_PLAN.md`
 - `docs/PROJECT_STATE.md`
@@ -203,10 +200,12 @@ The 2026-07-14 planning and Plan 001 infrastructure tasks added or updated:
 - `docs/plans/006-production-hardening-release.md`
 - `scripts/ci-device-test.sh`
 
-No Android production, Gradle, schema, or dependency file changed during Plan
+No Android production source, dependency, or schema file changed during Plan
 001. Milestone 3 changed only instrumentation tests: it corrected two
 determinism assumptions, expanded the app journey, and added the on-device Room
-version-1 reopen check. The remainder of this section records the earlier
+version-1 reopen check. Milestone 4 changed `app/build.gradle.kts` only to
+suppress runner-image-dependent `OldTargetApi` while retaining the exact
+zero-findings lint gate. The remainder of this section records the earlier
 completed search-to-series-details slice.
 
 Before Plan 001 milestone 1 restored Git metadata, this change inventory was
@@ -377,8 +376,9 @@ Living-plan authoring and validation on 2026-07-14:
   copied as current APIs.
 - The official OpenAI ExecPlan guide was inspected before creating
   `docs/PLANS.md` and the six numbered plans.
-- `rtk git status --short --branch` exited 128 and `rtk git diff --stat` exited
-  129 because this directory is still not a usable Git worktree.
+- At that discovery checkpoint, `rtk git status --short --branch` exited 128 and
+  `rtk git diff --stat` exited 129 because the directory was not yet a usable
+  Git worktree.
 - A `jq -e` contract-presence check confirmed OpenAPI 3.0.0/API 1.0.0 and the
   account-login, list-update, and recent-release operations; it exited 0 with
   `true`.
@@ -455,8 +455,8 @@ Plan 001 milestone 2 reproducible toolchain and host CI on 2026-07-14:
   `0c7bbedd114167b238c5c1d2aad91db8`.
 - `sdkmanager --list_installed` in the clean checkout's configured environment
   confirmed Build Tools 35.0.0, Platform 36 revision 2, and platform-tools
-  37.0.0. The GitHub-hosted workflow itself has not run because these changes
-  have not been published; no remote result is claimed.
+  37.0.0. At that Milestone 2 stopping point the workflow had not yet run; the
+  later Milestone 4 section records the eventual hosted evidence.
 
 Plan 001 milestone 3 device and accessibility validation on 2026-07-14:
 
@@ -509,16 +509,30 @@ Plan 001 milestone 4 candidate validation on 2026-07-14:
   image manifest records SDK root `/usr/local/lib/android/sdk` and Android
   Command Line Tools 12.0; the corresponding image-build source places it under
   `cmdline-tools/latest/bin`. The workflow now declares that root, invokes the
-  binary directly, and exports its path for the emulator action. A successful
-  hosted result remains pending and is not claimed here.
+  binary directly, and exports its path for the emulator action.
 - Hosted run `29332720434` passed exact SDK installation and booted the compact
   AVD at 1080x1920/420 dpi and the large AVD at 2560x1600/320 dpi. Both device
   jobs then failed before Gradle because android-emulator-runner invoked every
   line of the multi-line `script:` input in a separate shell; the isolated
   `if` line ended before `fi`. The width guard and Gradle command now live in
   `scripts/ci-device-test.sh`, invoked by one action command. `sh -n` and a
-  controlled compact/large/rejection harness pass. The still-running host job
-  is not claimed and will be superseded by this correction.
+  controlled compact/large/rejection harness pass. Its host job was cancelled
+  when the corrected push superseded this run, so it is not host-gate evidence.
+- Hosted run `29333616527` proved that checked-in command: compact measured 411
+  dp and large 1280 dp, and both device jobs completed 9/9. Its host Gradle gate
+  completed `BUILD SUCCESSFUL in 11m 17s` over 148 actionable tasks, but the
+  exact post-gate lint assertion failed. The hosted image's preinstalled Platforms
+  37/37.1 caused nonfatal `OldTargetApi` for intentionally pinned target 36;
+  adding Platform 37.1 to the local SDK reproduced the mismatch exactly.
+- Commit `99f68c9cf73f3422bc3b138928899ea50701cb55` suppresses only that
+  runner-image-dependent issue and makes every report/APK assertion identify
+  its failing path. Hosted run
+  [`29335569517`](https://github.com/miguel-rf/Kiroku/actions/runs/29335569517)
+  concluded `success`: the host built in 13m 5s with 148 actionable tasks (138
+  executed, 10 from cache) and passed the exact lint plus three-APK verifier;
+  compact measured 1080 px/420 dpi (411 dp) and finished 9/9 in a 12m 23s
+  Gradle build; large measured 2560 px/320 dpi (1280 dp) and finished 9/9 in a
+  15m 28s Gradle build. All three job conclusions are green.
 
 GitHub publication on 2026-07-14:
 
@@ -615,12 +629,11 @@ Verification:
 
 ## 10. Known failures, blockers, and technical debt
 
-Plan 001 closing verification:
+Plan 001 environment limitation:
 
-- Local and clean-candidate host, compact, and large checks are green, as are
-  large-font, manual resilience, and accessibility checks. The corrected
-  workflow must be published and complete a successful hosted
-  host/compact/large run before Plan 001 closes.
+- Local, clean-candidate, and hosted host/compact/large checks are green, as are
+  large-font, manual resilience, and accessibility checks. Plan 001 has no
+  remaining validation blocker.
 - The attached Realme can remain dozing behind its lock/notification surface.
   Unpinned connected-test commands therefore discover a non-interactive target;
   local acceptance runs must set `ANDROID_SERIAL` to the intended emulator.
@@ -631,11 +644,8 @@ Later-phase blockers:
   the undocumented login success token/expiry shape. This did not block the
   public search/detail milestone.
 
-Technical debt and remaining validation:
+Technical debt outside Plan 001:
 
-- The complete host/device workflow is present and structurally validated, but
-  no hosted pass is claimed until the candidate is published and all three jobs
-  finish successfully.
 - The slice has explicit refresh/retry actions but no pull-to-refresh gesture.
 - No database migration test exists because there is only schema version 1;
   version 2 must introduce the first migration fixture.
@@ -645,12 +655,12 @@ Technical debt and remaining validation:
 
 ## 11. Next three concrete implementation steps
 
-1. Inspect and publish the single-command device-runner correction.
-2. Monitor and fix the hosted host/compact/large workflow until every job is
-   green.
-3. Record the immutable commit and hosted run evidence in the plan index,
-   testing guide, this handoff, and Plan 001; run the final completion audit and
-   close the plan only when no requirement remains.
+1. Obtain official login success token/expiry evidence before starting Plan 002
+   implementation.
+2. If authentication remains blocked, execute only Plan 004's explicitly
+   permitted public-access work.
+3. Preserve the coordinated Room migration sequence when Plans 003 or 004 begin;
+   neither may independently claim the same next schema version.
 
 ## 12. Decisions that must not be revisited without new evidence
 

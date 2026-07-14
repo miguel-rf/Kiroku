@@ -14,12 +14,13 @@ Android source, build files, valid Git worktree, or existing conventions to
 preserve. Its SHA-256 at discovery was
 cb0fe8290ec7a8f1179f92a62d0be5f5602ac15feca343da6c35bceb269f30aa.
 
-The host provides OpenJDK 21.0.11. Discovery initially found no system Gradle,
-Kotlin compiler, Android SDK, emulator, or adb. The project now uses its Gradle
-8.13 wrapper, and the explicitly authorized SDK bootstrap installed Android
-Platform 36 revision 2, Build Tools 35.0.0, and platform-tools 37.0.0 under
-`/tmp/android-sdk`. No emulator is installed; the one attached physical device
-is currently unauthorized for ADB.
+The host provides OpenJDK 21.0.11, while local and hosted project gates use JDK
+17 with the checked-in Gradle 8.13 wrapper. The persistent ignored
+`.android-sdk` contains Android Platform 36 revision 2, Build Tools 35.0.0,
+platform-tools 37.0.0, Emulator 36.6.11, and the API 36 Google Play x86_64
+image. Separate Pixel 2 and Pixel Tablet AVDs provide compact and large local
+validation. The attached Realme is ADB-authorized but can remain dozing behind
+its lock surface, so acceptance commands explicitly select an interactive AVD.
 
 Context7 was subsequently configured as a project-scoped MCP server, pinned to
 @upstash/context7-mcp 3.2.3, verified end to end, and exposed through native
@@ -38,7 +39,7 @@ fields that are not marked nullable by the contract.
 The remaining work is split into outcome-focused plans so a new agent can
 continue with only the repository:
 
-1. `docs/plans/001-reproducible-validation-baseline.md` restores trustworthy
+1. `docs/plans/001-reproducible-validation-baseline.md` completed trustworthy
    Git/clean-checkout, SDK, CI, and compact/large device validation.
 2. `docs/plans/002-authentication-secure-session.md` implements login, secure
    restoration, expiry, profile, and logout after the official token response
@@ -54,11 +55,11 @@ continue with only the repository:
    security, benchmarks, Baseline Profiles, packaging, clean-checkout release
    verification, and documentation.
 
-Plan 001 is the immediate next plan. Plan 002 is contract-blocked. Plan 003
-depends on plan 002. The public-access verification and public slice of plan 004
-may proceed while authentication is blocked; authenticated release search must
-wait. Plans 003 and 004 share one sequential Room migration history and must
-revise their planned version numbers if their execution order changes.
+Plan 001 is complete. Plan 002 is contract-blocked, and Plan 003 depends on it.
+The public-access verification and public slice of Plan 004 are therefore the
+next executable scope; authenticated release search must wait. Plans 003 and
+004 share one sequential Room migration history and must revise their planned
+version numbers if their execution order changes.
 
 ## Ordered implementation plan
 
@@ -98,7 +99,7 @@ foundation, and generated Room version-1 schema are verified. SDK licenses were
 accepted only after explicit user authorization. No auth/token implementation
 was introduced.
 
-### Phase 2 — Search to series details: complete on available gates
+### Phase 2 — Search to series details: complete
 
 1. Define separate API DTO, Room entity, domain, and UI representations.
 2. Implement POST /series/search using a 25-item Paging 3 RemoteMediator.
@@ -117,14 +118,15 @@ Exit evidence: all eight items are implemented. `MainActivity` launches a
 Navigation 3 host with both lifecycle entry decorators, compact single-pane
 navigation, and an explicit stable 600 dp+ list/detail layout. Search and detail
 are Room-backed, refreshable, cache-aware, and covered by 28 passing JVM tests.
-Three Compose instrumented test classes compile and package. Spotless, lint,
-debug APK, Android-test APK, and minified unsigned release APK gates pass.
-
-Device execution remains an environment limitation rather than an unreported
-pass: the attached device is unauthorized and no emulator is installed. Run
-the packaged Compose tests and manual compact/tablet accessibility smoke checks
-when a device becomes available. The authoritative handoff and exact command
-history are in PROJECT_STATE.md.
+Four instrumented classes contain nine tests that pass on separate API 36 Pixel
+2 and Pixel Tablet AVDs and again on compact at 200% font scale. Spotless, lint,
+debug APK, Android-test APK, and minified unsigned release APK gates pass from a
+clean checkout. Manual evidence covers offline recovery, process death,
+rotation/resize, Back, TalkBack, and large text. Corrected commit
+`99f68c9cf73f3422bc3b138928899ea50701cb55` passed the hosted host, compact, and
+large jobs in
+[run 29335569517](https://github.com/miguel-rf/Kiroku/actions/runs/29335569517).
+The authoritative handoff and exact command history are in PROJECT_STATE.md.
 
 ### Phase 3 — Authentication and library: blocked on one API fact
 
@@ -184,21 +186,26 @@ contract is required.
 | POST search cannot rely on ordinary HTTP disk caching | Persist normalized query/result mappings and remote keys in Room |
 | Very large descriptions and category lists | Store off the main thread, render lazily, and collapse long category sections |
 | Process death during future list mutations | Same-transaction outbox and WorkManager in Phase 3 |
-| Temporary SDK under `/tmp` is not durable across host cleanup | Re-provision the documented packages or point `local.properties` at a persistent SDK before the next clean checkout |
+| Local SDK or hosted-runner package drift | Use the documented persistent SDK, install exact CI packages, and keep runner-image-dependent checks narrowly explained and deterministic |
 | Context7 service unavailable | Use primary vendor documentation, record the fallback, and never guess version-sensitive APIs |
 
 ## Resume order
 
-1. Execute and maintain
-   `docs/plans/001-reproducible-validation-baseline.md`, including Git
-   provenance, persistent SDK/CI, device execution, and accessibility smoke
-   checks.
-2. Seek official login success evidence and update
+Plan 001 is complete. Resume feature work in this order:
+
+1. Seek official login success evidence and update
    `docs/plans/002-authentication-secure-session.md`; do not write a token
    parser until the response fields are confirmed.
-3. If authentication remains blocked, perform only the public-access contract
+2. If authentication remains blocked, perform only the public-access contract
    verification allowed by `docs/plans/004-releases-background-refresh.md`.
    Do not begin authenticated library or release behavior.
+3. Preserve one sequential Room migration history across Plans 003 and 004 if
+   the public release slice changes the schema before authentication unblocks.
 
 Revision note (2026-07-14): Added the numbered living ExecPlan index and made
 it the execution-level source of truth. No Android implementation changed.
+Later the same day, synchronized the roadmap with Plan 001 completion: replaced
+the discovery-era SDK/device limitations with the persistent emulator baseline,
+recorded the all-green hosted run at
+`99f68c9cf73f3422bc3b138928899ea50701cb55`, and made Plan 004's permitted
+public-access work the next executable scope while Plan 002 remains blocked.

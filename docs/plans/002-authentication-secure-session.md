@@ -56,9 +56,10 @@ interceptor, Tink dependency, DataStore, or authenticated API service yet.
 exclude `sharedpref/secure_session.xml` and `files/secure-session/` from backup.
 
 Read `docs/API_NOTES.md`, `docs/SECURITY.md`, `docs/DEPENDENCIES.md`, and the
-checked-in `openapi.json` before implementing this plan. Plan 001 must first
-provide a trustworthy validation baseline, or this plan must explicitly record
-why implementation proceeded without it.
+checked-in `openapi.json` before implementing this plan. Plan 001 now provides
+the trustworthy clean-checkout, host, compact, and large validation baseline.
+The remaining prerequisite is official evidence for the login token and expiry
+shape.
 
 ## Confirmed API contracts
 
@@ -243,6 +244,10 @@ compilation of instrumented tests is not a passed device test.
 - [x] (2026-07-14 07:24Z) Verified through the configured Context7 server that
   AndroidX and Tink documentation can be queried; noted that the returned Tink
   examples are not sufficient to select the final stable Android API.
+- [x] (2026-07-14 13:39Z) Confirmed Plan 001's validation prerequisite complete
+  at commit `99f68c9cf73f3422bc3b138928899ea50701cb55`: hosted run
+  `29335569517` passed the host, compact, and large jobs. Authentication remains
+  blocked only on the official login token/expiry contract.
 - [ ] Obtain official evidence for the bearer token, expiry, and session
   metadata response fields and update this plan before coding.
 - [ ] Audit and implement Keystore-backed AEAD session storage.
@@ -290,7 +295,8 @@ compilation of instrumented tests is not a passed device test.
 
 ## Outcomes & Retrospective
 
-No implementation milestone has completed. Authentication is intentionally
+The repository validation prerequisite is complete, but no authentication
+implementation milestone has completed. Authentication is intentionally
 contract-blocked; the absence of a speculative token parser is the correct
 current result. Replace this section with security, behavior, and gate outcomes
 after the official contract is confirmed and implementation finishes.
@@ -305,4 +311,6 @@ handling or making a live credential experiment.
 
 Revision note (2026-07-14): Initial self-contained authentication plan created
 from the Phase 2 handoff and checked-in OpenAPI contract. No application code or
-dependency was changed.
+dependency was changed. Later the same day, recorded Plan 001's completed local
+and hosted validation prerequisite without changing the remaining official
+login-contract blocker.

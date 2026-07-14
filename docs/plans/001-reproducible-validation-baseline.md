@@ -61,22 +61,25 @@ The most recent captured host gate was:
     ./gradlew spotlessCheck testDebugUnitTest lintDebug assembleDebug \
         assembleDebugAndroidTest assembleRelease --no-daemon --console=plain
 
-It completed successfully from Milestone 2's clean validation checkout and from
-the final Milestone 4 working tree on 2026-07-14 with 28 JVM tests and no lint
-findings. The workflow definition is `.github/workflows/ci.yml`, and `README.md`
+It completed successfully from Milestone 2's clean validation checkout, the
+final Milestone 4 working tree, and hosted commit
+`99f68c9cf73f3422bc3b138928899ea50701cb55` on 2026-07-14. Hosted run
+`29335569517` processed 148 actionable host tasks (138 executed, 10 from
+cache), verified an exact zero-findings lint report and all three APKs, and
+passed independent nine-test compact and large jobs. The workflow definition is
+`.github/workflows/ci.yml`, and `README.md`
 documents persistent SDK setup. `scripts/ci-device-test.sh` is the single
 device-action command that measures the emulator and runs the instrumented
-suite. The ignored `local.properties` points at the
-persistent ignored `.android-sdk`, which contains Platform 36, Build Tools
-35.0.0, platform-tools, Emulator 36.6.11, and the API 36 Google Play x86_64
-image. Pixel 2 and Pixel Tablet AVDs provide the compact and large scenarios.
+suite. The ignored `local.properties` points at the persistent ignored
+`.android-sdk`, which contains the required Platform 36, Build Tools 35.0.0,
+platform-tools, Emulator 36.6.11, and API 36 image; Platform 37.1 was also added
+locally only to reproduce hosted lint behavior. Pixel 2 and Pixel Tablet AVDs
+provide the compact and large scenarios.
 
 Milestone 1 resolved the original provenance defect, Milestone 2 resolved host
 reproducibility, and Milestone 3 completed local device/accessibility
-validation. The complete candidate has also passed clean-checkout host,
-compact, and large gates. Hosted compact and large execution is green; the
-active gaps are a corrected all-green hosted rerun and the final synchronized
-handoff.
+validation. The complete candidate has also passed clean-checkout and hosted
+host, compact, and large gates. Plan 001 has no active validation gap.
 
 ## Confirmed API contracts
 
@@ -216,8 +219,8 @@ failure of this plan.
   `cc65ee5e41034ca5a19fda21377bda4d65f37c5d`). The checkout had no
   `local.properties` or project build directories and remained Git-clean after
   the build. Evidence-only plan and handoff updates followed the run. The
-  GitHub-hosted workflow has not run because these workspace changes have not
-  been published, so no remote CI result is claimed.
+  At that checkpoint the GitHub-hosted workflow had not run because the
+  workspace changes were unpublished, so no remote CI result was claimed.
 - [x] (2026-07-14 10:34Z) Installed a persistent ignored Android SDK containing
   Emulator 36.6.11 and API 36 Google Play x86_64 system image revision 7, then
   created separate Pixel 2 (1080x1920 at 420 dpi) and Pixel Tablet (2560x1600 at
@@ -322,15 +325,16 @@ failure of this plan.
   Moved the complete width guard and Gradle invocation into checked-in
   `scripts/ci-device-test.sh`, leaving one action command. `sh -n` passes; a
   fake-device harness accepted 411 dp compact and 1280 dp large inputs and
-  rejected a 411 dp input labelled large. The still-running host job is not
-  claimed as evidence; the corrected push superseded and cancelled it.
+  rejected a 411 dp input labelled large. That run's host job was not claimed
+  as evidence; the corrected push superseded and cancelled it.
 - [x] (2026-07-14 13:05Z) Hosted run `29333616527` proved the checked-in device
   command on the compact API 36 profile: the guard measured 1080 px at 420 dpi
   (411 dp), all nine tests completed, and Gradle reported `BUILD SUCCESSFUL`.
-  Its host Gradle gate also completed `BUILD SUCCESSFUL in 11m 17s` with all
-  148 tasks, but the follow-up exact lint-report assertion failed. Reproducing
-  the hosted image's preinstalled Android 37.1 platform locally produced the
-  sole `OldTargetApi` warning at the intentionally pinned `targetSdk = 36`;
+  Its host Gradle gate also completed `BUILD SUCCESSFUL in 11m 17s` over 148
+  actionable tasks, but the follow-up exact lint-report assertion failed.
+  Reproducing the hosted image's preinstalled Android 37.1 platform locally
+  produced the sole `OldTargetApi` warning at the intentionally pinned
+  `targetSdk = 36`;
   removing that newer platform returns `No issues found.` The configuration now
   suppresses only this runner-image-dependent issue, and post-build assertions
   emit the exact missing report or APK on any future failure. The large job
@@ -346,7 +350,18 @@ failure of this plan.
   programs pass syntax checks, and `git diff --check` is clean. Focused harness
   substitutions also proved that a missing lint report and a missing APK each
   print the failing path and exit nonzero.
-- [ ] Complete Milestone 4's final handoff update and plan-wide retrospective.
+- [x] (2026-07-14 13:32Z) Hosted run `29335569517` passed all three jobs at
+  corrected commit `99f68c9cf73f3422bc3b138928899ea50701cb55`. The host gate
+  completed `BUILD SUCCESSFUL in 13m 5s` with 148 actionable tasks (138
+  executed, 10 from cache), and the exact lint plus debug/Android-test/release
+  APK verifier passed. Compact measured 1080 px at 420 dpi (411 dp), finished
+  9/9 tests, and reported `BUILD SUCCESSFUL in 12m 23s`; large measured 2560 px
+  at 320 dpi (1280 dp), finished 9/9, and reported `BUILD SUCCESSFUL in 15m
+  28s`. The complete run conclusion is `success`.
+- [x] (2026-07-14 13:42Z) Completed Milestone 4's synchronized handoff and
+  plan-wide retrospective. The configured Luna Max testing agent independently
+  returned PASS with no acceptance, evidence, schema, security, or scope
+  blocker; the final static audit is clean.
 
 ## Decision log
 
@@ -631,9 +646,10 @@ and Room remained version 1 with ten tables and identity hash
 `0c7bbedd114167b238c5c1d2aad91db8`. Evidence-only plan and handoff changes were
 then made in the working tree to record those results.
 
-No Android source, dependency, test, or schema changed in Milestone 2. The
-workflow is ready to run when the current changes are published, but a
-GitHub-hosted run is deliberately not reported as evidence yet.
+No Android source, dependency, test, or schema changed in Milestone 2. At that
+milestone checkpoint the workflow was ready to run when the changes were
+published, but no GitHub-hosted result was reported as evidence; Milestone 4
+below records the eventual hosted matrix.
 
 Milestone 3 completed on 2026-07-14 at 11:37Z. The original compact tests were corrected
 only for semantics disambiguation and lazy-list scrolling, then passed 6/6.
@@ -649,8 +665,8 @@ touch exploration reached the search field and the labelled Back action while
 navigating the result-to-detail path. No production source or database schema
 change was needed for the device milestone.
 
-Milestone 4 is in progress. The final working-tree gates and the complete
-candidate's clean-checkout host/compact/large gates are green. The two-profile
+Milestone 4 completed on 2026-07-14. The final working-tree gates and the
+complete candidate's clean-checkout host/compact/large gates are green. The two-profile
 emulator CI matrix is width-enforcing and statically validated. An independent
 audit also closed gaps in journey input/ID validation and explicit device-job
 SDK installation. The unpinned local device invocation is not a green
@@ -660,21 +676,24 @@ evidence. The candidate is published. The first hosted run exposed the hosted
 SDK command-path difference before any project test; the second proved that fix
 and both emulator geometries before exposing the action's per-line script
 semantics. Run `29333616527` then completed both device jobs green—9/9 at 411 dp
-and 9/9 at 1280 dp—and its host Gradle gate completed all 148 tasks. Its only
-failure was the exact post-gate lint assertion: the hosted image's additional
-Android 37/37.1 platforms introduced `OldTargetApi` for the intentionally
-pinned target 36. That cause was reproduced locally and corrected by suppressing
-only the environment-dependent issue; the full host gate is green with 37.1
-present. No all-green hosted run is claimed until the corrected commit executes.
+and 9/9 at 1280 dp—and its host Gradle gate processed 148 actionable tasks. Its
+only failure was the exact post-gate lint assertion: the hosted image's
+additional Android 37/37.1 platforms introduced `OldTargetApi` for the
+intentionally pinned target 36. That cause was reproduced locally and corrected
+by suppressing only the environment-dependent issue. Corrected commit
+`99f68c9cf73f3422bc3b138928899ea50701cb55` then passed hosted run
+`29335569517`: the host gate processed 148 actionable tasks and the exact
+report/APK verifier was green; both width-enforced device jobs completed 9/9.
+No production source, dependency, or Room schema change was needed; Milestone 4
+changed build lint policy only for this runner-image-dependent issue and
+hardened CI diagnostics.
 
 ## Remaining work
 
-Milestones 1 through 3 are complete, and the committed candidate passes all
-clean-checkout host, compact, and large gates. Publish the reviewed lint
-determinism and diagnostic-verifier correction, wait for an all-green hosted
-host/compact/large matrix, then finish `docs/PROJECT_STATE.md`,
-`docs/TESTING.md`, the plan index, README status, and the final independent
-audit. The plan cannot be declared complete without that hosted result.
+Plan 001 has no remaining work. Plan 002 remains blocked on the undocumented
+official login token/expiry shape. Plan 004's explicitly permitted
+public-access work is the next executable numbered scope while that blocker
+remains; later plans must preserve the coordinated Room migration sequence.
 
 Revision note (2026-07-14): Initial plan created from the verified Phase 2
 handoff. Later the same day, recorded the owner-created private GitHub remote
@@ -711,3 +730,11 @@ At 13:08Z, recorded run `29333616527`'s green compact and large device jobs,
 green host Gradle gate, post-gate lint mismatch, exact Android 37.1 local
 reproduction, targeted `OldTargetApi` decision, diagnostic artifact checks, and
 green post-fix host gate without prematurely claiming an all-green hosted run.
+At 13:32Z, recorded corrected commit
+`99f68c9cf73f3422bc3b138928899ea50701cb55` and all-green hosted run
+`29335569517`, including the exact host task/verifier result and both measured
+nine-test device profiles, completing Milestone 4's technical acceptance.
+At 13:42Z, synchronized every repository entry point, recorded Plan 002's
+satisfied validation prerequisite, and completed the independent Luna Max
+plan-wide acceptance, evidence, schema, security, and scope audit with no
+blocker, closing Plan 001 with no remaining work.
