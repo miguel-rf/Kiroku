@@ -56,10 +56,25 @@ jobs:
 
       - name: Verify reports and APKs
         run: |
-          grep -Fqx "No issues found." app/build/reports/lint-results-debug.txt
-          test -s app/build/outputs/apk/debug/app-debug.apk
-          test -s app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
-          test -s app/build/outputs/apk/release/app-release-unsigned.apk
+          lint_report=app/build/reports/lint-results-debug.txt
+          if ! grep -Fqx "No issues found." "${lint_report}"; then
+            echo "Lint report contains findings or is missing: ${lint_report}" >&2
+            test ! -f "${lint_report}" || sed -n '1,160p' "${lint_report}" >&2
+            exit 1
+          fi
+
+          for apk in \
+            app/build/outputs/apk/debug/app-debug.apk \
+            app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            app/build/outputs/apk/release/app-release-unsigned.apk
+          do
+            if test ! -s "${apk}"; then
+              echo "Expected non-empty APK is missing: ${apk}" >&2
+              find app/build/outputs/apk -type f -printf '%p %s bytes\n' >&2
+              exit 1
+            fi
+            echo "Verified non-empty APK: ${apk}"
+          done
 
   device:
     name: Device gate (${{ matrix.form-factor }})

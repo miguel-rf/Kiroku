@@ -53,6 +53,13 @@ android {
         unitTests.isIncludeAndroidResources = true
     }
 
+    lint {
+        // This validation baseline intentionally pins targetSdk 36. Hosted
+        // runners can preinstall newer platforms that would otherwise make
+        // OldTargetApi depend on the runner image rather than project inputs.
+        disable += "OldTargetApi"
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
