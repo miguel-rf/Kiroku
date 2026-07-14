@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <issue id="AndroidGradlePluginVersion">
+        <!-- AGP 8.13.2 is validated with Gradle 8.13; upgrade both during the API 37 toolchain migration. -->
+        <ignore path="../gradle/wrapper/gradle-wrapper.properties" />
+    </issue>
+</lint>

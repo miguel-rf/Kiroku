@@ -1,0 +1,65 @@
+{
+  "series_id": 55099564912,
+  "title": "One Piece",
+  "url": "https://www.mangaupdates.com/series/example/one-piece",
+  "associated": [
+    { "title": "ONE PIECE" },
+    { "title": "ワンピース" }
+  ],
+  "description": "## A pirate adventure\n\nFollow **Luffy** and [his crew](https://example.invalid).",
+  "image": {
+    "url": {
+      "original": "https://cdn.mangaupdates.com/image/original.jpg",
+      "thumb": "https://cdn.mangaupdates.com/image/thumb.jpg"
+    },
+    "height": 900,
+    "width": 600
+  },
+  "type": "Manga",
+  "year": "1997",
+  "bayesian_rating": 8.91,
+  "rating_votes": 12345,
+  "genres": [
+    { "genre": "Action" },
+    { "genre": "Adventure" }
+  ],
+  "categories": [
+    { "category": "Pirates" },
+    { "category": "Found Family" }
+  ],
+  "latest_chapter": 1120,
+  "status": "**Ongoing** in Japan",
+  "licensed": true,
+  "completed": false,
+  "authors": [
+    {
+      "name": "Eiichiro Oda",
+      "author_id": 7,
+      "url": "https://www.mangaupdates.com/author/example",
+      "type": "Author"
+    },
+    {
+      "name": "Eiichiro Oda",
+      "author_id": 7,
+      "url": "https://www.mangaupdates.com/author/example",
+      "type": "Artist"
+    }
+  ],
+  "publishers": [
+    {
+      "publisher_name": "Shueisha",
+      "publisher_id": 10,
+      "url": "http://insecure.example.invalid",
+      "type": "Original",
+      "notes": "**Weekly** serialization"
+    }
+  ],
+  "last_updated": {
+    "timestamp": 1735689600,
+    "as_rfc3339": "2025-01-01T00:00:00Z",
+    "as_string": "January 1st 2025"
+  },
+  "future_detail_field": {
+    "ignored": true
+  }
+}

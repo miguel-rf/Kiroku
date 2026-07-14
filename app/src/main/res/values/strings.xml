@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kiroku</string>
+    <string name="unofficial_attribution">Unofficial MangaUpdates client</string>
+
+    <string name="action_back">Back</string>
+    <string name="action_close">Close</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_retry">Try again</string>
+    <string name="list_separator">, </string>
+    <string name="metadata_separator"> · </string>
+
+    <string name="search_title">Discover</string>
+    <string name="search_hint">Search series</string>
+    <string name="search_supporting_text">Titles from the MangaUpdates catalogue</string>
+    <string name="search_clear_query">Clear search query</string>
+    <string name="search_filters">Filters</string>
+    <string name="search_recent">Recent searches</string>
+    <string name="search_clear_recent">Clear recent searches</string>
+    <string name="search_prompt_title">Find your next series</string>
+    <string name="search_prompt_message">Search manga, manhwa, manhua, and novels by title.</string>
+    <string name="search_minimum">Enter at least two characters.</string>
+    <string name="search_loading">Searching MangaUpdates</string>
+    <string name="search_empty_title">No matching series</string>
+    <string name="search_empty_message">Try a different title or remove a filter.</string>
+    <string name="search_append_loading">Loading more series</string>
+    <string name="search_result_cover">Cover for %1$s</string>
+    <string name="search_result_latest_chapter">Latest chapter %1$d</string>
+    <string name="search_result_rating">Rated %1$.1f</string>
+    <string name="search_selected">Selected</string>
+
+    <string name="series_type_manga">Manga</string>
+    <string name="series_type_manhwa">Manhwa</string>
+    <string name="series_type_manhua">Manhua</string>
+    <string name="series_type_novel">Novel</string>
+    <string name="filter_completed">Completed</string>
+    <string name="filter_some_releases">Has releases</string>
+
+    <string name="offline_banner">Offline · showing saved content</string>
+    <string name="cached_summary_banner">Showing saved summary while full details load</string>
+    <string name="error_offline_title">You are offline</string>
+    <string name="error_offline_message">Reconnect and try again. Saved content remains available.</string>
+    <string name="error_timeout_title">The request timed out</string>
+    <string name="error_timeout_message">MangaUpdates took too long to respond.</string>
+    <string name="error_authentication_title">Session expired</string>
+    <string name="error_authentication_message">Sign in again to continue.</string>
+    <string name="error_permission_title">Access denied</string>
+    <string name="error_permission_message">This account cannot perform that action.</string>
+    <string name="error_rate_limit_title">Too many requests</string>
+    <string name="error_rate_limit_message">Wait a moment before trying again.</string>
+    <string name="error_validation_title">Request not accepted</string>
+    <string name="error_validation_message">Review the selected options and try again.</string>
+    <string name="error_not_found_title">Series not found</string>
+    <string name="error_not_found_message">This series may no longer be available.</string>
+    <string name="error_server_title">MangaUpdates is unavailable</string>
+    <string name="error_server_message">The service had a problem. Try again shortly.</string>
+    <string name="error_data_title">Could not read this response</string>
+    <string name="error_data_message">The service returned data Kiroku could not safely use.</string>
+    <string name="error_unknown_title">Something went wrong</string>
+    <string name="error_unknown_message">Try again. Saved content has not been removed.</string>
+
+    <string name="series_details_title">Series details</string>
+    <string name="series_loading">Loading series details</string>
+    <string name="series_cover">Cover for %1$s</string>
+    <string name="series_no_cover">No cover available</string>
+    <string name="series_description">Description</string>
+    <string name="series_alternative_titles">Alternative titles</string>
+    <string name="series_genres">Genres</string>
+    <string name="series_categories">Categories</string>
+    <string name="series_authors">Authors</string>
+    <string name="series_artists">Artists</string>
+    <string name="series_contributors">Contributors</string>
+    <string name="series_publishers">Publishers</string>
+    <string name="series_status">Status</string>
+    <string name="series_type">Type</string>
+    <string name="series_year">Year</string>
+    <string name="series_rating">Rating</string>
+    <plurals name="series_rating_value">
+        <item quantity="one">%1$.2f from %2$d vote</item>
+        <item quantity="other">%1$.2f from %2$d votes</item>
+    </plurals>
+    <string name="series_rating_only">%1$.2f</string>
+    <string name="series_information">Information</string>
+    <string name="series_latest_chapter">Latest chapter</string>
+    <string name="series_licensed">Licensed</string>
+    <string name="series_completed">Completed</string>
+    <string name="series_yes">Yes</string>
+    <string name="series_no">No</string>
+    <string name="series_select_prompt">Select a series to see its details</string>
+    <plurals name="series_categories_collapsed">
+        <item quantity="one">Show %1$d category</item>
+        <item quantity="other">Show all %1$d categories</item>
+    </plurals>
+    <string name="series_categories_expanded">Show fewer categories</string>
+    <string name="series_publisher_value">%1$s · %2$s</string>
+</resources>

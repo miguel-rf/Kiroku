@@ -1,0 +1,57 @@
+{
+  "total_hits": 10000,
+  "page": 1,
+  "per_page": 25,
+  "results": [
+    {
+      "hit_title": "One Piece",
+      "record": {
+        "series_id": 55099564912,
+        "title": "One Piece",
+        "url": "https://www.mangaupdates.com/series/example/one-piece",
+        "description": null,
+        "image": {
+          "url": {
+            "original": null,
+            "thumb": "https://cdn.mangaupdates.com/image/thumb.jpg"
+          },
+          "height": null,
+          "width": 200
+        },
+        "type": "Manga",
+        "year": "1997",
+        "bayesian_rating": null,
+        "rating_votes": 12345,
+        "genres": [
+          { "genre": "Action" },
+          { "genre": "Adventure" }
+        ],
+        "latest_chapter": 1120,
+        "last_updated": {
+          "timestamp": 0,
+          "as_rfc3339": null,
+          "as_string": null
+        },
+        "future_field": "ignored"
+      }
+    },
+    {
+      "record": {
+        "series_id": 42,
+        "title": "Series Without Optional Data",
+        "description": "",
+        "image": {
+          "url": {
+            "original": null,
+            "thumb": null
+          },
+          "height": null,
+          "width": null
+        },
+        "year": "",
+        "genres": []
+      }
+    }
+  ],
+  "future_response_field": true
+}

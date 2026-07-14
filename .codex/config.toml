@@ -1,0 +1,9 @@
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp@3.2.3"]
+env_vars = ["CONTEXT7_API_KEY"]
+enabled = true
+required = false
+startup_timeout_sec = 30
+tool_timeout_sec = 60
+default_tools_approval_mode = "auto"

@@ -1,0 +1,628 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "0c7bbedd114167b238c5c1d2aad91db8",
+    "entities": [
+      {
+        "tableName": "series_summaries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`seriesId` INTEGER NOT NULL, `title` TEXT NOT NULL, `url` TEXT, `description` TEXT, `imageOriginalUrl` TEXT, `imageThumbnailUrl` TEXT, `imageWidth` INTEGER, `imageHeight` INTEGER, `type` TEXT, `year` TEXT, `rating` REAL, `ratingVotes` INTEGER, `genres` TEXT NOT NULL, `latestChapter` INTEGER, `apiLastUpdatedEpochSeconds` INTEGER, `cachedAtEpochMillis` INTEGER NOT NULL, PRIMARY KEY(`seriesId`))",
+        "fields": [
+          {
+            "fieldPath": "seriesId",
+            "columnName": "seriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "imageOriginalUrl",
+            "columnName": "imageOriginalUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "imageThumbnailUrl",
+            "columnName": "imageThumbnailUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "imageWidth",
+            "columnName": "imageWidth",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "imageHeight",
+            "columnName": "imageHeight",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "year",
+            "columnName": "year",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "rating",
+            "columnName": "rating",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "ratingVotes",
+            "columnName": "ratingVotes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "genres",
+            "columnName": "genres",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latestChapter",
+            "columnName": "latestChapter",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "apiLastUpdatedEpochSeconds",
+            "columnName": "apiLastUpdatedEpochSeconds",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "cachedAtEpochMillis",
+            "columnName": "cachedAtEpochMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "seriesId"
+          ]
+        }
+      },
+      {
+        "tableName": "series_details",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`seriesId` INTEGER NOT NULL, `status` TEXT, `licensed` INTEGER, `completed` INTEGER, `cachedAtEpochMillis` INTEGER NOT NULL, PRIMARY KEY(`seriesId`), FOREIGN KEY(`seriesId`) REFERENCES `series_summaries`(`seriesId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "seriesId",
+            "columnName": "seriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "licensed",
+            "columnName": "licensed",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "completed",
+            "columnName": "completed",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "cachedAtEpochMillis",
+            "columnName": "cachedAtEpochMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "seriesId"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "series_summaries",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "seriesId"
+            ],
+            "referencedColumns": [
+              "seriesId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "series_alternative_titles",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`seriesId` INTEGER NOT NULL, `position` INTEGER NOT NULL, `title` TEXT NOT NULL, PRIMARY KEY(`seriesId`, `position`), FOREIGN KEY(`seriesId`) REFERENCES `series_summaries`(`seriesId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "seriesId",
+            "columnName": "seriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "seriesId",
+            "position"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_series_alternative_titles_seriesId",
+            "unique": false,
+            "columnNames": [
+              "seriesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_series_alternative_titles_seriesId` ON `${TABLE_NAME}` (`seriesId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "series_summaries",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "seriesId"
+            ],
+            "referencedColumns": [
+              "seriesId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "series_categories",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`seriesId` INTEGER NOT NULL, `position` INTEGER NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`seriesId`, `position`), FOREIGN KEY(`seriesId`) REFERENCES `series_summaries`(`seriesId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "seriesId",
+            "columnName": "seriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "seriesId",
+            "position"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_series_categories_seriesId",
+            "unique": false,
+            "columnNames": [
+              "seriesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_series_categories_seriesId` ON `${TABLE_NAME}` (`seriesId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "series_summaries",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "seriesId"
+            ],
+            "referencedColumns": [
+              "seriesId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "series_contributors",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`seriesId` INTEGER NOT NULL, `position` INTEGER NOT NULL, `contributorId` INTEGER, `name` TEXT NOT NULL, `role` TEXT NOT NULL, `url` TEXT, PRIMARY KEY(`seriesId`, `position`), FOREIGN KEY(`seriesId`) REFERENCES `series_summaries`(`seriesId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "seriesId",
+            "columnName": "seriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contributorId",
+            "columnName": "contributorId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "role",
+            "columnName": "role",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "seriesId",
+            "position"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_series_contributors_seriesId",
+            "unique": false,
+            "columnNames": [
+              "seriesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_series_contributors_seriesId` ON `${TABLE_NAME}` (`seriesId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "series_summaries",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "seriesId"
+            ],
+            "referencedColumns": [
+              "seriesId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "series_publishers",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`seriesId` INTEGER NOT NULL, `position` INTEGER NOT NULL, `publisherId` INTEGER, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `notes` TEXT, `url` TEXT, PRIMARY KEY(`seriesId`, `position`), FOREIGN KEY(`seriesId`) REFERENCES `series_summaries`(`seriesId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "seriesId",
+            "columnName": "seriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "publisherId",
+            "columnName": "publisherId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "seriesId",
+            "position"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_series_publishers_seriesId",
+            "unique": false,
+            "columnNames": [
+              "seriesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_series_publishers_seriesId` ON `${TABLE_NAME}` (`seriesId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "series_summaries",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "seriesId"
+            ],
+            "referencedColumns": [
+              "seriesId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "search_queries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cacheKey` TEXT NOT NULL, `query` TEXT NOT NULL, `types` TEXT NOT NULL, `filters` TEXT NOT NULL, `totalHits` INTEGER, `updatedAtEpochMillis` INTEGER NOT NULL, PRIMARY KEY(`cacheKey`))",
+        "fields": [
+          {
+            "fieldPath": "cacheKey",
+            "columnName": "cacheKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "query",
+            "columnName": "query",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "types",
+            "columnName": "types",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "filters",
+            "columnName": "filters",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalHits",
+            "columnName": "totalHits",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "updatedAtEpochMillis",
+            "columnName": "updatedAtEpochMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cacheKey"
+          ]
+        }
+      },
+      {
+        "tableName": "search_results",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cacheKey` TEXT NOT NULL, `seriesId` INTEGER NOT NULL, `position` INTEGER NOT NULL, PRIMARY KEY(`cacheKey`, `seriesId`), FOREIGN KEY(`cacheKey`) REFERENCES `search_queries`(`cacheKey`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`seriesId`) REFERENCES `series_summaries`(`seriesId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "cacheKey",
+            "columnName": "cacheKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "seriesId",
+            "columnName": "seriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cacheKey",
+            "seriesId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_search_results_cacheKey",
+            "unique": false,
+            "columnNames": [
+              "cacheKey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_search_results_cacheKey` ON `${TABLE_NAME}` (`cacheKey`)"
+          },
+          {
+            "name": "index_search_results_seriesId",
+            "unique": false,
+            "columnNames": [
+              "seriesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_search_results_seriesId` ON `${TABLE_NAME}` (`seriesId`)"
+          },
+          {
+            "name": "index_search_results_cacheKey_position",
+            "unique": true,
+            "columnNames": [
+              "cacheKey",
+              "position"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_search_results_cacheKey_position` ON `${TABLE_NAME}` (`cacheKey`, `position`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "search_queries",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "cacheKey"
+            ],
+            "referencedColumns": [
+              "cacheKey"
+            ]
+          },
+          {
+            "table": "series_summaries",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "seriesId"
+            ],
+            "referencedColumns": [
+              "seriesId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "search_remote_keys",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cacheKey` TEXT NOT NULL, `nextPage` INTEGER, `endOfPaginationReached` INTEGER NOT NULL, `updatedAtEpochMillis` INTEGER NOT NULL, PRIMARY KEY(`cacheKey`), FOREIGN KEY(`cacheKey`) REFERENCES `search_queries`(`cacheKey`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "cacheKey",
+            "columnName": "cacheKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextPage",
+            "columnName": "nextPage",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "endOfPaginationReached",
+            "columnName": "endOfPaginationReached",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAtEpochMillis",
+            "columnName": "updatedAtEpochMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cacheKey"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "search_queries",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "cacheKey"
+            ],
+            "referencedColumns": [
+              "cacheKey"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "recent_searches",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`normalizedQuery` TEXT NOT NULL, `displayQuery` TEXT NOT NULL, `searchedAtEpochMillis` INTEGER NOT NULL, PRIMARY KEY(`normalizedQuery`))",
+        "fields": [
+          {
+            "fieldPath": "normalizedQuery",
+            "columnName": "normalizedQuery",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayQuery",
+            "columnName": "displayQuery",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "searchedAtEpochMillis",
+            "columnName": "searchedAtEpochMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "normalizedQuery"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0c7bbedd114167b238c5c1d2aad91db8')"
+    ]
+  }
+}
