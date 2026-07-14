@@ -49,9 +49,11 @@ milestone 1 restored the owner-confirmed Git worktree at commit
 SDK setup and added the pinned host workflow; Milestone 3 completed device and
 accessibility validation. The workflow now includes separate compact/large
 emulator jobs. The committed candidate passes fresh-checkout host, compact, and
-large gates, but it has not run on GitHub because the candidate remains
-unpublished, so no remote result is claimed. The detailed evidence is embedded
-in plan 001 and `docs/PROJECT_STATE.md`.
+large gates and is published. Its first hosted run stopped before project tests
+because the image-installed Android SDK manager was not on the job command
+path; the image-manifest-based correction is prepared, so no successful remote
+result is claimed. The detailed evidence is embedded in plan 001 and
+`docs/PROJECT_STATE.md`.
 
 The existing app is one Gradle application module, uses a manual `AppContainer`,
 keeps Room as the source of truth, separates DTO/entity/domain/UI models, and
@@ -100,5 +102,7 @@ claiming an unpublished GitHub-hosted result. Later recorded Milestone 3's
 green compact/large automated suites and complete manual accessibility/resilience
 matrix while keeping hosted CI as an explicit closing requirement. No
 production application implementation was changed. Later recorded the complete
-candidate's green fresh-checkout host/compact/large gates; publication and
-hosted CI remain the final Plan 001 requirements.
+candidate's green fresh-checkout host/compact/large gates, its publication, and
+the first hosted run's pre-test SDK command-path failure. The narrow correction
+is based on the exact runner-image manifest; a green hosted rerun remains
+required.

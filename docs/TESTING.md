@@ -97,9 +97,13 @@ and remained reachable by scrolling. With TalkBack bound and touch exploration
 enabled, accessibility focus reached the labelled search field and the labelled
 Back action on details; the emulator was restored afterward.
 
-The workflow is structurally validated locally. A hosted GitHub Actions pass is
-still required before Plan 001 is complete and must not be inferred from local
-results.
+The workflow is structurally validated locally. Its first hosted run,
+`29332138612`, stopped before Gradle or emulator execution because the current
+Ubuntu 24.04 image does not put its installed `sdkmanager` on the shell command
+path. The workflow now invokes the image-manifested Command Line Tools 12.0
+binary by absolute SDK path and exports that directory to subsequent steps. A
+successful hosted rerun is still required before Plan 001 is complete and must
+not be inferred from local results.
 
 ## First vertical slice matrix
 

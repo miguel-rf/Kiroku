@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+env:
+  ANDROID_HOME: /usr/local/lib/android/sdk
+  ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+
 concurrency:
   group: validation-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -39,7 +43,8 @@ jobs:
 
       - name: Install Android SDK packages
         run: |
-          sdkmanager --sdk_root="${ANDROID_HOME}" \
+          test -x "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
+          "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --sdk_root="${ANDROID_HOME}" \
             "platform-tools" \
             "platforms;android-36" \
             "build-tools;35.0.0"
@@ -92,10 +97,13 @@ jobs:
 
       - name: Install Android build packages
         run: |
-          sdkmanager --sdk_root="${ANDROID_HOME}" \
+          test -x "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
+          "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --sdk_root="${ANDROID_HOME}" \
             "platform-tools" \
             "platforms;android-36" \
             "build-tools;35.0.0"
+          echo "${ANDROID_HOME}/cmdline-tools/latest/bin" >> "${GITHUB_PATH}"
+          echo "${ANDROID_HOME}/platform-tools" >> "${GITHUB_PATH}"
 
       - name: Enable KVM
         run: |

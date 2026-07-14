@@ -301,6 +301,15 @@ failure of this plan.
   completed 9/9 in 35s. Both XML reports contain zero failures, errors, or
   skips. The checkout remained Git-clean, and the temporary emulators were
   stopped after evidence capture.
+- [x] (2026-07-14 12:23Z) Published the candidate and observed hosted run
+  `29332138612` fail before any Gradle or device test. All three jobs reported
+  `sdkmanager: command not found` in their SDK-package step. The run's exact
+  Ubuntu 24.04 image manifest documents Android Command Line Tools 12.0 and SDK
+  root `/usr/local/lib/android/sdk`; the tool is installed but its directory is
+  not on the step's command path. The workflow now declares the documented SDK
+  root, invokes the image-defined `cmdline-tools/latest/bin/sdkmanager`
+  directly, and exports its directory for android-emulator-runner. No
+  application, dependency, or schema change was required.
 - [ ] Complete Milestone 4's final handoff update and plan-wide retrospective.
 
 ## Decision log
@@ -386,6 +395,14 @@ failure of this plan.
   Rationale: The runner's current release can install a newer default Build
   Tools revision; explicit packages keep the device build aligned with the
   plan's host toolchain instead of relying on hosted-image state.
+  Date/Author: 2026-07-14, Codex.
+- Decision: Invoke the Ubuntu 24.04 image's documented Android Command Line
+  Tools 12.0 binary at its image-defined absolute SDK path and export that path
+  for the emulator action.
+  Rationale: Hosted evidence proved the tool is not on the shell command path,
+  while the exact runner-image manifest identifies its installed version and
+  SDK root. This is narrower and more reproducible than adding another setup
+  action or downloading an unpinned latest package.
   Date/Author: 2026-07-14, Codex.
 
 ## Unexpected discoveries
@@ -507,6 +524,13 @@ failure of this plan.
   narrow width. The workflow now derives width dp from `wm size` and `wm
   density` and enforces the expected side of the 600 dp breakpoint before the
   Gradle command.
+- Observation: The hosted Ubuntu 24.04 runner installs Android Command Line
+  Tools but does not expose `sdkmanager` on the job shell's command path.
+  Evidence: run `29332138612` failed identically in the host, compact, and large
+  package-install steps with exit 127. Its runner metadata links image
+  `20260705.232.1`, whose official manifest records Command Line Tools 12.0 and
+  SDK root `/usr/local/lib/android/sdk`; the corresponding official image-build
+  source installs the executable at `cmdline-tools/latest/bin/sdkmanager`.
 
 ## Outcomes & Retrospective
 
@@ -567,13 +591,15 @@ audit also closed gaps in journey input/ID validation and explicit device-job
 SDK installation. The unpinned local device invocation is not a green
 aggregate result because it also selected the covered physical device; the
 subsequent pinned and clean-checkout emulator invocations are the acceptance
-evidence. No hosted GitHub Actions result or final publication is claimed.
+evidence. The candidate is published; the first hosted run exposed and led to
+a narrow SDK command-path correction before any project test executed. No
+successful hosted GitHub Actions result is claimed yet.
 
 ## Remaining work
 
 Milestones 1 through 3 are complete, and the committed candidate passes all
-clean-checkout host, compact, and large gates. Inspect the final diff, publish,
-wait for the hosted host/compact/large matrix, and finish
+clean-checkout host, compact, and large gates. Publish the reviewed SDK-path
+correction, wait for the hosted host/compact/large matrix, and finish
 `docs/PROJECT_STATE.md`, `docs/TESTING.md`, the plan index, and this
 retrospective. The plan cannot be declared complete without the hosted CI and
 final-audit results.
@@ -604,4 +630,6 @@ evidence. At 12:04Z, recorded the independent candidate audit, enforced real CI
 width/toolchain invariants, hardened journey inputs, and captured the green
 post-edit host gate. At 12:17Z, recorded the fresh-clone candidate's green host,
 forced JVM, compact, and large gates and narrowed the remaining work to
-publication, hosted CI, and final synchronized closure.
+publication, hosted CI, and final synchronized closure. At 12:23Z, recorded the
+first hosted run's pre-test SDK command-path failure and the image-manifest-based
+workflow correction without misreporting the failed run as test evidence.

@@ -33,7 +33,9 @@ production-hardening milestone. The owner-created private repository
 provenance, established persistent SDK/host CI, and completed the compact,
 large, resilience, and accessibility matrix. Milestone 4 has a statically
 validated compact/large emulator workflow plus green working-tree and
-clean-candidate gates; publication and a hosted run remain before closure.
+clean-candidate gates. The candidate is published; its first hosted run exposed
+a pre-test SDK command-path defect that is corrected locally. A successful
+hosted rerun and final synchronized handoff remain before closure.
 
 ## 2. Architecture and settled technical decisions
 
@@ -130,9 +132,11 @@ added saved-state/offline and on-device Room persistence coverage, provisioned
 independent Pixel 2/Pixel Tablet AVDs, and completed the manual resilience and
 accessibility matrix without changing production implementation, dependencies,
 or the database schema. The workflow now includes both emulator profiles. The
-final committed candidate passes clean-checkout host, compact, and large gates,
-but has not run on GitHub because the workspace changes have not been
-published, so no remote CI success is claimed.
+final committed candidate passes clean-checkout host, compact, and large gates
+and is published. Hosted run `29332138612` stopped before project tests because
+`sdkmanager` was not on the Ubuntu image's command path; a correction based on
+that exact image's official manifest is prepared, so no remote CI success is
+claimed yet.
 
 The status of the completed search-to-series-details milestone remains:
 
@@ -494,8 +498,13 @@ Plan 001 milestone 4 candidate validation on 2026-07-14:
   failures/errors/skips on separately booted API 36 Pixel 2 (1080x1920, 420
   dpi, about 411 dp) and Pixel Tablet (2560x1600, 320 dpi, 1280 dp) AVDs in 42
   and 35 seconds. The generated XML timestamps are 12:11:28Z and 12:14:38Z.
-- Publication and hosted workflow evidence remain pending and are not claimed
-  here.
+- Published hosted run `29332138612` failed all three jobs before Gradle or
+  device execution with `sdkmanager: command not found`. Its exact Ubuntu 24.04
+  image manifest records SDK root `/usr/local/lib/android/sdk` and Android
+  Command Line Tools 12.0; the corresponding image-build source places it under
+  `cmdline-tools/latest/bin`. The workflow now declares that root, invokes the
+  binary directly, and exports its path for the emulator action. A successful
+  hosted result remains pending and is not claimed here.
 
 GitHub publication on 2026-07-14:
 
@@ -595,9 +604,9 @@ Verification:
 Plan 001 closing verification:
 
 - Local and clean-candidate host, compact, and large checks are green, as are
-  large-font, manual resilience, and accessibility checks. Publication and a
-  successful hosted host/compact/large workflow run remain required before
-  Plan 001 closes.
+  large-font, manual resilience, and accessibility checks. The corrected
+  workflow must be published and complete a successful hosted
+  host/compact/large run before Plan 001 closes.
 - The attached Realme can remain dozing behind its lock/notification surface.
   Unpinned connected-test commands therefore discover a non-interactive target;
   local acceptance runs must set `ANDROID_SERIAL` to the intended emulator.
@@ -622,7 +631,7 @@ Technical debt and remaining validation:
 
 ## 11. Next three concrete implementation steps
 
-1. Inspect and publish the clean-validated Plan 001 candidate.
+1. Inspect and publish the Ubuntu SDK command-path correction.
 2. Monitor and fix the hosted host/compact/large workflow until every job is
    green.
 3. Record the immutable commit and hosted run evidence in the plan index,
