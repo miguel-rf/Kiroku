@@ -64,7 +64,9 @@ The most recent captured host gate was:
 It completed successfully from Milestone 2's clean validation checkout and from
 the final Milestone 4 working tree on 2026-07-14 with 28 JVM tests and no lint
 findings. The workflow definition is `.github/workflows/ci.yml`, and `README.md`
-documents persistent SDK setup. The ignored `local.properties` points at the
+documents persistent SDK setup. `scripts/ci-device-test.sh` is the single
+device-action command that measures the emulator and runs the instrumented
+suite. The ignored `local.properties` points at the
 persistent ignored `.android-sdk`, which contains Platform 36, Build Tools
 35.0.0, platform-tools, Emulator 36.6.11, and the API 36 Google Play x86_64
 image. Pixel 2 and Pixel Tablet AVDs provide the compact and large scenarios.
@@ -310,6 +312,17 @@ failure of this plan.
   root, invokes the image-defined `cmdline-tools/latest/bin/sdkmanager`
   directly, and exports its directory for android-emulator-runner. No
   application, dependency, or schema change was required.
+- [x] (2026-07-14 12:40Z) Hosted rerun `29332720434` proved the SDK-path fix:
+  every job installed the exact Android packages, and the compact and large
+  emulators booted at 1080x1920/420 dpi and 2560x1600/320 dpi. Both device jobs
+  then stopped before Gradle because android-emulator-runner executes each
+  newline in `script:` as a separate `/usr/bin/sh -c`; the multi-line `if`
+  therefore ended before `fi`, and variables would not persist across lines.
+  Moved the complete width guard and Gradle invocation into checked-in
+  `scripts/ci-device-test.sh`, leaving one action command. `sh -n` passes; a
+  fake-device harness accepted 411 dp compact and 1280 dp large inputs and
+  rejected a 411 dp input labelled large. The still-running host job is not
+  claimed as evidence and will be superseded by the corrected push.
 - [ ] Complete Milestone 4's final handoff update and plan-wide retrospective.
 
 ## Decision log
@@ -403,6 +416,13 @@ failure of this plan.
   while the exact runner-image manifest identifies its installed version and
   SDK root. This is narrower and more reproducible than adding another setup
   action or downloading an unpinned latest package.
+  Date/Author: 2026-07-14, Codex.
+- Decision: Give android-emulator-runner one command that invokes a checked-in
+  POSIX shell script for display validation and Gradle execution.
+  Rationale: Hosted logs prove the action runs each `script:` line in an
+  independent shell. A repository script preserves variables and structured
+  control flow, can be syntax-checked directly, and keeps the action input
+  unambiguous.
   Date/Author: 2026-07-14, Codex.
 
 ## Unexpected discoveries
@@ -531,6 +551,13 @@ failure of this plan.
   `20260705.232.1`, whose official manifest records Command Line Tools 12.0 and
   SDK root `/usr/local/lib/android/sdk`; the corresponding official image-build
   source installs the executable at `cmdline-tools/latest/bin/sdkmanager`.
+- Observation: android-emulator-runner does not execute a multi-line `script:`
+  block as one shell program.
+  Evidence: in run `29332720434`, both device jobs logged a separate
+  `/usr/bin/sh -c` for each line. The assignment lines completed, then the
+  isolated `if ... then` line failed with `expecting "fi"`. Both AVDs had
+  already booted with the expected profile geometry, so this was command
+  framing rather than an emulator or application failure.
 
 ## Outcomes & Retrospective
 
@@ -592,14 +619,18 @@ SDK installation. The unpinned local device invocation is not a green
 aggregate result because it also selected the covered physical device; the
 subsequent pinned and clean-checkout emulator invocations are the acceptance
 evidence. The candidate is published; the first hosted run exposed and led to
-a narrow SDK command-path correction before any project test executed. No
-successful hosted GitHub Actions result is claimed yet.
+a narrow SDK command-path correction before any project test executed. The
+second run proved that correction and both emulator profiles, then exposed the
+action's per-line script semantics before Gradle. The width/test logic now lives
+in one checked-in shell script. No successful hosted GitHub Actions result is
+claimed yet.
 
 ## Remaining work
 
 Milestones 1 through 3 are complete, and the committed candidate passes all
-clean-checkout host, compact, and large gates. Publish the reviewed SDK-path
-correction, wait for the hosted host/compact/large matrix, and finish
+clean-checkout host, compact, and large gates. Publish the reviewed
+single-command device-script correction, wait for the hosted
+host/compact/large matrix, and finish
 `docs/PROJECT_STATE.md`, `docs/TESTING.md`, the plan index, and this
 retrospective. The plan cannot be declared complete without the hosted CI and
 final-audit results.
@@ -632,4 +663,6 @@ post-edit host gate. At 12:17Z, recorded the fresh-clone candidate's green host,
 forced JVM, compact, and large gates and narrowed the remaining work to
 publication, hosted CI, and final synchronized closure. At 12:23Z, recorded the
 first hosted run's pre-test SDK command-path failure and the image-manifest-based
-workflow correction without misreporting the failed run as test evidence.
+workflow correction without misreporting the failed run as test evidence. At
+12:40Z, recorded the corrected run's successful SDK/emulator setup, the
+action's per-line script behavior, and the locally harnessed single-script fix.

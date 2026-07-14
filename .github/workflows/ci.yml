@@ -114,6 +114,10 @@ jobs:
 
       - name: Run instrumented tests
         uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2.37.0
+        env:
+          FORM_FACTOR: ${{ matrix.form-factor }}
+          MIN_WIDTH_DP: ${{ matrix.min_width_dp }}
+          MAX_WIDTH_DP: ${{ matrix.max_width_dp }}
         with:
           api-level: 36
           target: google_apis
@@ -123,18 +127,4 @@ jobs:
             -no-snapshot -no-window -gpu swiftshader_indirect -noaudio
             -no-boot-anim -camera-back none -camera-front none
           disable-animations: true
-          script: |
-            width_px="$(adb shell wm size | sed -n 's/.*size: \([0-9][0-9]*\)x.*/\1/p' | tail -n 1)"
-            density="$(adb shell wm density | sed -n 's/.*density: \([0-9][0-9]*\).*/\1/p' | tail -n 1)"
-            if [ -z "${width_px}" ] || [ -z "${density}" ] || [ "${density}" -eq 0 ]; then
-              echo "Unable to determine emulator width and density" >&2
-              exit 1
-            fi
-            width_dp=$((width_px * 160 / density))
-            echo "Emulator display: ${width_px}px at ${density}dpi = ${width_dp}dp wide"
-            if [ "${width_dp}" -lt ${{ matrix.min_width_dp }} ] || \
-               [ "${width_dp}" -gt ${{ matrix.max_width_dp }} ]; then
-              echo "Unexpected ${{ matrix.form-factor }} width: ${width_dp}dp" >&2
-              exit 1
-            fi
-            ./gradlew connectedDebugAndroidTest --no-daemon --console=plain
+          script: sh scripts/ci-device-test.sh

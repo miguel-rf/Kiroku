@@ -34,8 +34,10 @@ provenance, established persistent SDK/host CI, and completed the compact,
 large, resilience, and accessibility matrix. Milestone 4 has a statically
 validated compact/large emulator workflow plus green working-tree and
 clean-candidate gates. The candidate is published; its first hosted run exposed
-a pre-test SDK command-path defect that is corrected locally. A successful
-hosted rerun and final synchronized handoff remain before closure.
+a pre-test SDK command-path defect, and its second proved that correction before
+exposing the emulator action's per-line script semantics. Both are corrected
+locally. A successful hosted rerun and final synchronized handoff remain before
+closure.
 
 ## 2. Architecture and settled technical decisions
 
@@ -135,8 +137,10 @@ or the database schema. The workflow now includes both emulator profiles. The
 final committed candidate passes clean-checkout host, compact, and large gates
 and is published. Hosted run `29332138612` stopped before project tests because
 `sdkmanager` was not on the Ubuntu image's command path; a correction based on
-that exact image's official manifest is prepared, so no remote CI success is
-claimed yet.
+that exact image's official manifest is published. Run `29332720434` passed SDK
+setup and booted both emulator profiles, but split the multi-line action script
+into independent shells before Gradle. The device logic is now one checked-in
+shell-script command, so no remote CI success is claimed yet.
 
 The status of the completed search-to-series-details milestone remains:
 
@@ -190,12 +194,14 @@ The 2026-07-14 planning and Plan 001 infrastructure tasks added or updated:
 - `docs/PLANS.md`
 - `docs/PROJECT_PLAN.md`
 - `docs/PROJECT_STATE.md`
+- `docs/TESTING.md`
 - `docs/plans/001-reproducible-validation-baseline.md`
 - `docs/plans/002-authentication-secure-session.md`
 - `docs/plans/003-library-offline-sync.md`
 - `docs/plans/004-releases-background-refresh.md`
 - `docs/plans/005-settings-adaptive-accessibility.md`
 - `docs/plans/006-production-hardening-release.md`
+- `scripts/ci-device-test.sh`
 
 No Android production, Gradle, schema, or dependency file changed during Plan
 001. Milestone 3 changed only instrumentation tests: it corrected two
@@ -505,6 +511,14 @@ Plan 001 milestone 4 candidate validation on 2026-07-14:
   `cmdline-tools/latest/bin`. The workflow now declares that root, invokes the
   binary directly, and exports its path for the emulator action. A successful
   hosted result remains pending and is not claimed here.
+- Hosted run `29332720434` passed exact SDK installation and booted the compact
+  AVD at 1080x1920/420 dpi and the large AVD at 2560x1600/320 dpi. Both device
+  jobs then failed before Gradle because android-emulator-runner invoked every
+  line of the multi-line `script:` input in a separate shell; the isolated
+  `if` line ended before `fi`. The width guard and Gradle command now live in
+  `scripts/ci-device-test.sh`, invoked by one action command. `sh -n` and a
+  controlled compact/large/rejection harness pass. The still-running host job
+  is not claimed and will be superseded by this correction.
 
 GitHub publication on 2026-07-14:
 
@@ -631,7 +645,7 @@ Technical debt and remaining validation:
 
 ## 11. Next three concrete implementation steps
 
-1. Inspect and publish the Ubuntu SDK command-path correction.
+1. Inspect and publish the single-command device-runner correction.
 2. Monitor and fix the hosted host/compact/large workflow until every job is
    green.
 3. Record the immutable commit and hosted run evidence in the plan index,

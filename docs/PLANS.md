@@ -51,9 +51,11 @@ accessibility validation. The workflow now includes separate compact/large
 emulator jobs. The committed candidate passes fresh-checkout host, compact, and
 large gates and is published. Its first hosted run stopped before project tests
 because the image-installed Android SDK manager was not on the job command
-path; the image-manifest-based correction is prepared, so no successful remote
-result is claimed. The detailed evidence is embedded in plan 001 and
-`docs/PROJECT_STATE.md`.
+path. The second hosted run proved the image-manifest-based correction and
+booted both emulator profiles, then exposed the emulator action's per-line
+script semantics before Gradle. The device logic is now one checked-in shell
+script command, so no successful remote result is claimed. The detailed
+evidence is embedded in plan 001 and `docs/PROJECT_STATE.md`.
 
 The existing app is one Gradle application module, uses a manual `AppContainer`,
 keeps Room as the source of truth, separates DTO/entity/domain/UI models, and
@@ -104,5 +106,6 @@ matrix while keeping hosted CI as an explicit closing requirement. No
 production application implementation was changed. Later recorded the complete
 candidate's green fresh-checkout host/compact/large gates, its publication, and
 the first hosted run's pre-test SDK command-path failure. The narrow correction
-is based on the exact runner-image manifest; a green hosted rerun remains
-required.
+is based on the exact runner-image manifest. Later recorded the second run's
+successful SDK/emulator setup, per-line action-script failure, and checked-in
+single-command correction; a green hosted rerun remains required.

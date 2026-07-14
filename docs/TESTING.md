@@ -102,8 +102,14 @@ The workflow is structurally validated locally. Its first hosted run,
 Ubuntu 24.04 image does not put its installed `sdkmanager` on the shell command
 path. The workflow now invokes the image-manifested Command Line Tools 12.0
 binary by absolute SDK path and exports that directory to subsequent steps. A
-successful hosted rerun is still required before Plan 001 is complete and must
-not be inferred from local results.
+second run, `29332720434`, proved that fix and booted the requested compact and
+large profiles, but android-emulator-runner split the multi-line `script:` input
+into independent shells before Gradle. The device command is now the single
+`sh scripts/ci-device-test.sh` invocation. That checked-in script passes
+`sh -n`; a controlled fake-device harness accepted the expected 411 dp and
+1280 dp profiles and rejected a 411 dp device labelled large. A successful
+hosted rerun is still required before Plan 001 is complete and must not be
+inferred from local results.
 
 ## First vertical slice matrix
 
