@@ -71,9 +71,9 @@ image. Pixel 2 and Pixel Tablet AVDs provide the compact and large scenarios.
 
 Milestone 1 resolved the original provenance defect, Milestone 2 resolved host
 reproducibility, and Milestone 3 completed local device/accessibility
-validation. The active gaps are a clean checkout of the complete candidate,
-publication, successful hosted host/compact/large CI, and the final synchronized
-handoff.
+validation. The complete candidate has also passed clean-checkout host,
+compact, and large gates. The active gaps are publication, successful hosted
+host/compact/large CI, and the final synchronized handoff.
 
 ## Confirmed API contracts
 
@@ -285,6 +285,22 @@ failure of this plan.
   edits. It completed with `BUILD SUCCESSFUL in 31s`; 12 of 148 tasks executed,
   including Android-test compilation/packaging, Spotless, and lint. The clean
   candidate checkout remains the authoritative no-local-state gate.
+- [x] (2026-07-14 12:17Z) Validated committed candidate
+  `5093d60d9092e24f785c82c98c44568e636979f3` (tree
+  `29a1c1363d236703bbf198577cb7410d9d3fbeea`) from fresh clone
+  `/tmp/kiroku-plan001-clean.kYba8o`. It began without `local.properties`,
+  project build directories, or local Gradle state; `git fsck --full` and Git
+  status were clean. The exact host gate completed with `BUILD SUCCESSFUL in
+  19s`; a forced `testDebugUnitTest --rerun-tasks --no-build-cache` completed
+  in 50s and regenerated 28 tests across ten suites with zero
+  failures/errors/skips. Lint reported no issues, all three APKs passed archive
+  integrity checks, and Room version 1 remained unchanged.
+- [x] (2026-07-14 12:17Z) Ran the clean candidate's complete device suite on
+  both required API 36 profiles. Pixel 2 at 1080x1920 and 420 dpi (about 411 dp)
+  completed 9/9 in 42s; Pixel Tablet at 2560x1600 and 320 dpi (1280 dp)
+  completed 9/9 in 35s. Both XML reports contain zero failures, errors, or
+  skips. The checkout remained Git-clean, and the temporary emulators were
+  stopped after evidence capture.
 - [ ] Complete Milestone 4's final handoff update and plan-wide retrospective.
 
 ## Decision log
@@ -544,24 +560,22 @@ touch exploration reached the search field and the labelled Back action while
 navigating the result-to-detail path. No production source or database schema
 change was needed for the device milestone.
 
-Milestone 4 is in progress. The final working-tree host gate and normalized
-compact device gate are green, and the two-profile emulator CI matrix is
-defined, width-enforcing, and statically validated. An independent audit also
-closed gaps in journey input/ID validation and explicit device-job SDK
-installation. The unpinned local device invocation is not a
-green aggregate result because it also selected the covered physical device;
-the subsequent pinned Pixel 2 invocation completed 9/9 and is the acceptance
+Milestone 4 is in progress. The final working-tree gates and the complete
+candidate's clean-checkout host/compact/large gates are green. The two-profile
+emulator CI matrix is width-enforcing and statically validated. An independent
+audit also closed gaps in journey input/ID validation and explicit device-job
+SDK installation. The unpinned local device invocation is not a green
+aggregate result because it also selected the covered physical device; the
+subsequent pinned and clean-checkout emulator invocations are the acceptance
 evidence. No hosted GitHub Actions result or final publication is claimed.
 
 ## Remaining work
 
-Milestones 1 through 3 are complete: both compact and large automated device
-validation pass, and the manual behavior and accessibility matrix is recorded.
-The final working-tree host and compact gates are also green. Perform the clean
-candidate-checkout host/device gates, inspect the full diff, publish, wait for
-the compact/large hosted CI matrix, and finish
+Milestones 1 through 3 are complete, and the committed candidate passes all
+clean-checkout host, compact, and large gates. Inspect the final diff, publish,
+wait for the hosted host/compact/large matrix, and finish
 `docs/PROJECT_STATE.md`, `docs/TESTING.md`, the plan index, and this
-retrospective. The plan cannot be declared complete without those CI and
+retrospective. The plan cannot be declared complete without the hosted CI and
 final-audit results.
 
 Revision note (2026-07-14): Initial plan created from the verified Phase 2
@@ -588,4 +602,6 @@ compact rerun had in fact completed 9/9 before the later stop, and narrowed the
 remaining work to clean-candidate, publication, hosted-CI, and final handoff
 evidence. At 12:04Z, recorded the independent candidate audit, enforced real CI
 width/toolchain invariants, hardened journey inputs, and captured the green
-post-edit host gate.
+post-edit host gate. At 12:17Z, recorded the fresh-clone candidate's green host,
+forced JVM, compact, and large gates and narrowed the remaining work to
+publication, hosted CI, and final synchronized closure.

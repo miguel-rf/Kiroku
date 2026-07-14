@@ -48,7 +48,8 @@ milestone 1 restored the owner-confirmed Git worktree at commit
 `6d33474b79db5592bf4b6458e7e9ab54b50ddb23`. Milestone 2 documented persistent
 SDK setup and added the pinned host workflow; Milestone 3 completed device and
 accessibility validation. The workflow now includes separate compact/large
-emulator jobs, but it has not run on GitHub because the candidate remains
+emulator jobs. The committed candidate passes fresh-checkout host, compact, and
+large gates, but it has not run on GitHub because the candidate remains
 unpublished, so no remote result is claimed. The detailed evidence is embedded
 in plan 001 and `docs/PROJECT_STATE.md`.
 
@@ -98,4 +99,6 @@ instructions, pinned host workflow, and successful clean-candidate gate without
 claiming an unpublished GitHub-hosted result. Later recorded Milestone 3's
 green compact/large automated suites and complete manual accessibility/resilience
 matrix while keeping hosted CI as an explicit closing requirement. No
-production application implementation was changed.
+production application implementation was changed. Later recorded the complete
+candidate's green fresh-checkout host/compact/large gates; publication and
+hosted CI remain the final Plan 001 requirements.

@@ -43,8 +43,12 @@ commit SHA.
 
 The host command runs Spotless, 28 JVM tests across ten suites, debug lint,
 debug packaging, Android-test packaging, and the minified release build. The
-latest local run completed successfully; lint reports `No issues found.` and
-all JVM suites report zero failures, errors, or skips.
+committed candidate `5093d60d9092e24f785c82c98c44568e636979f3` was cloned
+into a fresh checkout without `local.properties` or project build directories.
+The exact gate completed successfully in 19 seconds. A forced uncached JVM run
+then regenerated all ten suites in 50 seconds: 28 tests, zero failures, errors,
+or skips. Lint reports `No issues found.`, all three APKs are valid archives,
+Room schema version 1 is unchanged, and the checkout remained Git-clean.
 
 The JVM suites cover DTOs, mappers, Room DAOs/relations, repository caching,
 Paging `RemoteMediator`, ViewModel transitions/debounce, root navigation/layout
@@ -66,6 +70,14 @@ independent configurations:
 | Compact | API 36 Pixel 2 | 1080x1920, 420 dpi (about 411 dp wide) | Single-pane result-to-detail navigation and Back |
 | Large | API 36 Pixel Tablet | 2560x1600, 320 dpi (1280 dp wide) | Simultaneous list/detail panes with no compact Back action |
 | Large text | API 36 Pixel 2, `font_scale=2.0` | 1080x1920, 420 dpi | Same nine tests at 200% font scale |
+
+The same clean candidate checkout reran all nine tests on separately booted
+compact and large API 36 AVDs. The compact run completed in 42 seconds and its
+XML timestamp is `2026-07-14T12:11:28`; the large run completed in 35 seconds
+and its XML timestamp is `2026-07-14T12:14:38`. Both reports contain nine tests
+with zero failures, errors, or skips. Display size and density were measured
+from the corresponding emulator session before each run; Android's generated
+XML identifies both ephemeral sessions only as `emulator-5556 - 16`.
 
 The normalized compact suite was rerun with `ANDROID_SERIAL=emulator-5556` on
 2026-07-14 after restoring font scale 1.0, native size/density, disabling

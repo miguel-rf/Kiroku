@@ -19,7 +19,7 @@ list/detail navigation, Room-backed search/detail caching, and deterministic
 JVM/integration tests. Nine instrumented tests pass on independent API 36 Pixel
 2 and Pixel Tablet emulator profiles, including saved-state, offline/retry, and
 on-device Room persistence coverage. Plan 001 is closing the baseline with a
-clean candidate checkout and hosted CI evidence. See
+clean-validated candidate and pending hosted CI evidence. See
 [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md) for exact evidence and
 [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) for roadmap status. Remaining work
 is organized as self-contained living ExecPlans in

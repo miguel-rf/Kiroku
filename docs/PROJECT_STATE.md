@@ -3,8 +3,8 @@
 Last updated: 2026-07-14
 
 This is the authoritative, self-contained handoff. It distinguishes verified
-build/test evidence from work that still needs clean-checkout or hosted-CI
-evidence, and from later work blocked on additional MangaUpdates contracts.
+build/test evidence from work that still needs hosted-CI evidence, and from
+later work blocked on additional MangaUpdates contracts.
 
 ## 1. Current project objective
 
@@ -32,8 +32,8 @@ production-hardening milestone. The owner-created private repository
 `6d33474b79db5592bf4b6458e7e9ab54b50ddb23`. Milestones 1 through 3 restored
 provenance, established persistent SDK/host CI, and completed the compact,
 large, resilience, and accessibility matrix. Milestone 4 has a statically
-validated compact/large emulator workflow and green working-tree gates; a clean
-candidate checkout, publication, and hosted run remain before closure.
+validated compact/large emulator workflow plus green working-tree and
+clean-candidate gates; publication and a hosted run remain before closure.
 
 ## 2. Architecture and settled technical decisions
 
@@ -129,22 +129,26 @@ the living handoff. Milestone 3 made narrow test-only determinism corrections,
 added saved-state/offline and on-device Room persistence coverage, provisioned
 independent Pixel 2/Pixel Tablet AVDs, and completed the manual resilience and
 accessibility matrix without changing production implementation, dependencies,
-or the database schema. The workflow now includes both emulator profiles but
-has not run on GitHub because the workspace changes have not been published, so
-no remote CI success is claimed.
+or the database schema. The workflow now includes both emulator profiles. The
+final committed candidate passes clean-checkout host, compact, and large gates,
+but has not run on GitHub because the workspace changes have not been
+published, so no remote CI success is claimed.
 
 The status of the completed search-to-series-details milestone remains:
 
 The private owner-confirmed remote is now
 `https://github.com/miguel-rf/Kiroku`. The complete snapshot import commit is
-`08d92a20e2a99b3c40857e5e174095d563ddd200`; current `main` is its
+`08d92a20e2a99b3c40857e5e174095d563ddd200`; current `main` descends from its
 documentation-only child `6d33474b79db5592bf4b6458e7e9ab54b50ddb23`. A
 fresh clone passed `git fsck --full`, matched this complete workspace through
 its index and ignore rules, and supplied the adopted Git metadata. Milestone 2's
 clean validation candidate was commit
 `31d55c41c4947db327654ed9d32536ed4fcb9e7c`, with tree
 `cc65ee5e41034ca5a19fda21377bda4d65f37c5d`; its checkout was clean before and
-after the complete host gate.
+after the complete host gate. The complete Plan 001 candidate is
+`5093d60d9092e24f785c82c98c44568e636979f3`, tree
+`29a1c1363d236703bbf198577cb7410d9d3fbeea`; its separate clean clone passed
+the final host, compact, and large gates and remained Git-clean.
 
 The search-to-series-details milestone is code-complete and verified by all
 working-tree quality gates available on this host.
@@ -464,7 +468,7 @@ Plan 001 milestone 3 device and accessibility validation on 2026-07-14:
   between 1280 dp two-pane and 590 dp compact layouts. Back, 200% text, and
   TalkBack focus/labels were also observed. No credentials were used.
 
-Plan 001 milestone 4 working-tree validation on 2026-07-14:
+Plan 001 milestone 4 candidate validation on 2026-07-14:
 
 - Added the two-entry API 36 Google APIs x86_64 emulator matrix to
   `.github/workflows/ci.yml`, using Pixel 2/Pixel Tablet profiles, disabled
@@ -480,8 +484,18 @@ Plan 001 milestone 4 working-tree validation on 2026-07-14:
   assertions with no Compose hierarchy, so that aggregate command failed. The
   corrected `ANDROID_SERIAL=emulator-5556` rerun completed with `BUILD
   SUCCESSFUL in 31s`; its XML records 9 tests, zero failures/errors/skips.
-- Clean candidate-checkout execution, publication, and hosted workflow evidence
-  remain pending and are not claimed here.
+- Candidate `5093d60d9092e24f785c82c98c44568e636979f3`, tree
+  `29a1c1363d236703bbf198577cb7410d9d3fbeea`, was cloned into
+  `/tmp/kiroku-plan001-clean.kYba8o` without local project state. The exact host
+  gate completed in 19 seconds; a forced uncached JVM run completed in 50
+  seconds with all 28 tests green. Lint, APK integrity, unchanged Room schema,
+  `git fsck --full`, and post-run Git cleanliness all passed.
+- The same clean checkout completed all 9 instrumented tests with zero
+  failures/errors/skips on separately booted API 36 Pixel 2 (1080x1920, 420
+  dpi, about 411 dp) and Pixel Tablet (2560x1600, 320 dpi, 1280 dp) AVDs in 42
+  and 35 seconds. The generated XML timestamps are 12:11:28Z and 12:14:38Z.
+- Publication and hosted workflow evidence remain pending and are not claimed
+  here.
 
 GitHub publication on 2026-07-14:
 
@@ -580,9 +594,10 @@ Verification:
 
 Plan 001 closing verification:
 
-- Local host, compact, large, large-font, manual resilience, and accessibility
-  checks are green. A clean candidate checkout and a successful hosted
-  host/compact/large workflow run remain required before Plan 001 closes.
+- Local and clean-candidate host, compact, and large checks are green, as are
+  large-font, manual resilience, and accessibility checks. Publication and a
+  successful hosted host/compact/large workflow run remain required before
+  Plan 001 closes.
 - The attached Realme can remain dozing behind its lock/notification surface.
   Unpinned connected-test commands therefore discover a non-interactive target;
   local acceptance runs must set `ANDROID_SERIAL` to the intended emulator.
@@ -607,10 +622,9 @@ Technical debt and remaining validation:
 
 ## 11. Next three concrete implementation steps
 
-1. Create a clean candidate checkout and rerun the exact host gate plus compact
-   and large `connectedDebugAndroidTest` commands against that checkout.
-2. Inspect and publish the reviewed Plan 001 candidate, then monitor and fix the
-   hosted host/compact/large workflow until every job is green.
+1. Inspect and publish the clean-validated Plan 001 candidate.
+2. Monitor and fix the hosted host/compact/large workflow until every job is
+   green.
 3. Record the immutable commit and hosted run evidence in the plan index,
    testing guide, this handoff, and Plan 001; run the final completion audit and
    close the plan only when no requirement remains.
