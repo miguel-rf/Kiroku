@@ -21,34 +21,73 @@ must validate exported schemas. Full provenance is in DEPENDENCIES.md.
 
 Local JVM and static checks:
 
-    ./gradlew spotlessCheck
-    ./gradlew testDebugUnitTest
-    ./gradlew lintDebug
-    ./gradlew assembleDebug
-    ./gradlew assembleRelease
+    ./gradlew spotlessCheck testDebugUnitTest lintDebug assembleDebug \
+        assembleDebugAndroidTest assembleRelease --no-daemon --console=plain
 
 Device/emulator checks:
 
     ./gradlew connectedDebugAndroidTest
 
-For CI, run compilation and JVM tests before lint so failures are quick and
-clear. Instrumented tests require an API 23+ emulator; the eventual CI image
-should use a pinned system image and disable animations.
+When more than one device is attached, select the intended target explicitly:
+
+    ANDROID_SERIAL=emulator-5556 \
+        ./gradlew connectedDebugAndroidTest --no-daemon --console=plain
+
+`.github/workflows/ci.yml` runs the complete host command and a two-entry API 36
+Google APIs x86_64 device matrix. The `pixel_2` entry exercises a compact
+profile; `pixel_tablet` independently exercises a 600 dp-or-wider profile.
+System animations are disabled and every workflow action is pinned to a full
+commit SHA.
 
 ## Current vertical-slice evidence
 
-The final host command ran Spotless, 28 JVM tests, debug lint, debug packaging,
-Android-test packaging, and the minified release build together. It completed
-successfully; lint reports no issues and all JVM suites report zero failures,
-errors, or skips.
+The host command runs Spotless, 28 JVM tests across ten suites, debug lint,
+debug packaging, Android-test packaging, and the minified release build. The
+latest local run completed successfully; lint reports `No issues found.` and
+all JVM suites report zero failures, errors, or skips.
 
 The JVM suites cover DTOs, mappers, Room DAOs/relations, repository caching,
 Paging `RemoteMediator`, ViewModel transitions/debounce, root navigation/layout
-decisions, and MockWebServer request/error behavior. Three Compose instrumented
-classes cover the launch/search/detail journey and screen state/action behavior.
-They compile and package, but they have not executed because the only attached
-device is unauthorized and no emulator is installed. They must not be described
-as passing until `connectedDebugAndroidTest` succeeds.
+decisions, and MockWebServer request/error behavior.
+
+Four instrumented classes contain nine tests. They cover search and detail
+screen states/actions, compact navigation, expanded list/detail selection,
+saved-state restoration, cached detail during an offline refresh failure and
+retry recovery, plus real on-device creation and reopening of Room version 1.
+The Room test verifies all ten application tables, `PRAGMA user_version = 1`,
+identity hash `0c7bbedd114167b238c5c1d2aad91db8`, and persisted data after reopen.
+No automated device test calls the production MangaUpdates service.
+
+The nine-test suite passed with zero failures, errors, or skips on each of these
+independent configurations:
+
+| Scenario | API/profile | Resolution and density | Observable coverage |
+| --- | --- | --- | --- |
+| Compact | API 36 Pixel 2 | 1080x1920, 420 dpi (about 411 dp wide) | Single-pane result-to-detail navigation and Back |
+| Large | API 36 Pixel Tablet | 2560x1600, 320 dpi (1280 dp wide) | Simultaneous list/detail panes with no compact Back action |
+| Large text | API 36 Pixel 2, `font_scale=2.0` | 1080x1920, 420 dpi | Same nine tests at 200% font scale |
+
+The normalized compact suite was rerun with `ANDROID_SERIAL=emulator-5556` on
+2026-07-14 after restoring font scale 1.0, native size/density, disabling
+TalkBack, and keeping all animation scales at zero. Its generated XML reports
+9 tests, 0 failures, 0 errors, and 0 skipped. A separate unfiltered invocation
+also discovered an attached Realme whose locked/dozing surface exposed no
+Compose hierarchy; that known physical-device failure is not used as emulator
+acceptance evidence.
+
+Manual API 36 Pixel Tablet smoke evidence covers launch, a small read-only
+public One Piece search, selection and details, cached results/details while
+airplane mode reports no active network, retry after connectivity recovery,
+actual process termination and cold task restoration, portrait rotation,
+native-to-590 dp resize and return to the two-pane layout, and compact Back.
+At 200% font scale, search cards and detail metadata wrapped without overlap
+and remained reachable by scrolling. With TalkBack bound and touch exploration
+enabled, accessibility focus reached the labelled search field and the labelled
+Back action on details; the emulator was restored afterward.
+
+The workflow is structurally validated locally. A hosted GitHub Actions pass is
+still required before Plan 001 is complete and must not be inferred from local
+results.
 
 ## First vertical slice matrix
 

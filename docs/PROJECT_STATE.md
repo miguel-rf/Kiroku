@@ -3,8 +3,8 @@
 Last updated: 2026-07-14
 
 This is the authoritative, self-contained handoff. It distinguishes verified
-build/test evidence from work that still needs a physical device, an emulator,
-or additional MangaUpdates contract evidence.
+build/test evidence from work that still needs clean-checkout or hosted-CI
+evidence, and from later work blocked on additional MangaUpdates contracts.
 
 ## 1. Current project objective
 
@@ -18,18 +18,22 @@ The completed product milestone is the first offline-first vertical slice:
     Search -> MangaUpdates API -> Room -> repository -> ViewModel -> Compose
            -> Navigation 3 -> series details
 
-The milestone implementation and every host-executable quality gate are now
-complete. Instrumented tests compile and package, but their execution remains
-unavailable because the only attached Android device is unauthorized and no
-emulator is installed. Authentication, library synchronization, and releases
-have not been started.
+The milestone implementation and every local host/device quality gate are now
+complete. Twenty-eight JVM tests pass; four instrumented classes contain nine
+tests that pass on separate compact and large API 36 emulator profiles and on
+the compact profile at 200% font scale. Authentication, library
+synchronization, and releases have not been started.
 
-The latest repository tasks were planning and publication only. Six self-
-contained living ExecPlans cover every remaining validation, authentication,
-library, release, settings/accessibility, and production-hardening milestone.
-The owner then created the private GitHub repository `miguel-rf/Kiroku`, and the
-GitHub plugin uploaded the 94-file non-ignored snapshot to `main`. No
-application source, schema, dependency, or test changed during either task.
+The active repository task is Plan 001 Milestone 4. Six self-contained living
+ExecPlans cover every remaining validation,
+authentication, library, release, settings/accessibility, and
+production-hardening milestone. The owner-created private repository
+`miguel-rf/Kiroku` supplies the verified Git metadata at
+`6d33474b79db5592bf4b6458e7e9ab54b50ddb23`. Milestones 1 through 3 restored
+provenance, established persistent SDK/host CI, and completed the compact,
+large, resilience, and accessibility matrix. Milestone 4 has a statically
+validated compact/large emulator workflow and green working-tree gates; a clean
+candidate checkout, publication, and hosted run remain before closure.
 
 ## 2. Architecture and settled technical decisions
 
@@ -63,6 +67,10 @@ application source, schema, dependency, or test changed during either task.
   where version compatibility required it, primary vendor documentation.
 - Coil remains at 3.4.0 because 3.5.0 selected Kotlin stdlib 2.4.0, which is
   outside AGP 8.13's supported Kotlin bytecode range and produced R8 warnings.
+- CI uses `ubuntu-24.04`, JDK 17, the checked-in wrapper, exact Android SDK
+  packages, read-only permissions, full action commit SHAs, and Gradle's basic
+  cache provider. Its device matrix uses separate API 36 Google APIs x86_64
+  Pixel 2 and Pixel Tablet profiles with animations disabled.
 - MangaUpdates identifiers are `Long`; live data contains values larger than
   `Int.MAX_VALUE`.
 - JSON ignores unknown keys but does not coerce invalid required values into
@@ -94,34 +102,52 @@ application source, schema, dependency, or test changed during either task.
 - Localized loading, empty, recoverable-error, retry, refresh, cached/offline,
   and missing-image states. User-visible strings are resources.
 - Debug and minified release packaging, Room schema export, Spotless formatting,
-  Android lint configuration, 28 passing JVM tests, and three compiled Compose
-  instrumented test classes.
+  Android lint configuration, 28 passing JVM tests, and nine passing device
+  tests across four instrumented classes.
+- A read-only CI workflow with immutable action SHAs, JDK 17, exact Android SDK
+  packages, wrapper validation/basic Gradle caching, the complete host gate,
+  and independent compact/large emulator jobs.
 - Android SDK Platform 36 revision 2, Build Tools 35.0.0, and platform-tools
-  37.0.0 are installed under `/tmp/android-sdk`; all seven displayed Google SDK
-  licenses were accepted with the user's explicit authorization. The ignored
-  `local.properties` points this checkout to that SDK.
+  37.0.0 plus Emulator 36.6.11 and the API 36 Google Play x86_64 image are
+  installed under the ignored persistent `.android-sdk`. The current ignored
+  `local.properties` points this checkout there, while `README.md` documents a
+  host-level persistent installation that clean checkouts can discover through
+  `ANDROID_HOME` without any committed local path.
 
 ## 4. Current task and exact implementation status
 
-The living-plan authoring task is complete. `docs/PLANS.md` indexes six numbered
+Plan 001 milestones 1 through 3 are complete. `docs/PLANS.md` indexes six numbered
 plans under `docs/plans/`, each with the confirmed contracts, existing-code
 entry points, architecture, database impact, milestones, testing requirements,
 progress, decisions, discoveries, remaining work, and revision history needed
-by a new agent. Plan 001 is the next executable plan; plan 002 is blocked on the
+by a new agent. Plan 001 Milestone 4 is active; plan 002 is blocked on the
 official login response shape, and plan 003 depends on it. Plan 004 permits only
 its public-access verification while authentication is blocked.
 
-No production implementation was changed by this task. The status of the
-completed search-to-series-details milestone remains:
+Milestone 2 added `.github/workflows/ci.yml`, updated `README.md`, and refreshed
+the living handoff. Milestone 3 made narrow test-only determinism corrections,
+added saved-state/offline and on-device Room persistence coverage, provisioned
+independent Pixel 2/Pixel Tablet AVDs, and completed the manual resilience and
+accessibility matrix without changing production implementation, dependencies,
+or the database schema. The workflow now includes both emulator profiles but
+has not run on GitHub because the workspace changes have not been published, so
+no remote CI success is claimed.
+
+The status of the completed search-to-series-details milestone remains:
 
 The private owner-confirmed remote is now
 `https://github.com/miguel-rf/Kiroku`. The complete snapshot import commit is
-`08d92a20e2a99b3c40857e5e174095d563ddd200`. The current local directory still
-has no usable Git metadata; publishing it did not turn this directory into a
-clean checkout.
+`08d92a20e2a99b3c40857e5e174095d563ddd200`; current `main` is its
+documentation-only child `6d33474b79db5592bf4b6458e7e9ab54b50ddb23`. A
+fresh clone passed `git fsck --full`, matched this complete workspace through
+its index and ignore rules, and supplied the adopted Git metadata. Milestone 2's
+clean validation candidate was commit
+`31d55c41c4947db327654ed9d32536ed4fcb9e7c`, with tree
+`cc65ee5e41034ca5a19fda21377bda4d65f37c5d`; its checkout was clean before and
+after the complete host gate.
 
 The search-to-series-details milestone is code-complete and verified by all
-quality gates available on this host.
+working-tree quality gates available on this host.
 
 - `MainActivity` launches `KirokuApp`.
 - `SearchRoute` and `SeriesRoute(Long)` use `rememberNavBackStack` and
@@ -133,17 +159,24 @@ quality gates available on this host.
   test covers that mapping.
 - Debug, unsigned minified release, and debug Android-test APKs build.
 - JVM tests pass and lint reports no findings.
-- Compose instrumentation is compiled and packaged but has not run: `adb`
-  reports device `6c604f95` as `unauthorized`, and the installed SDK has no
-  emulator or system image.
+- The nine-test instrumentation suite passes with zero skips/failures on API 36
+  Pixel 2 (1080x1920 at 420 dpi), API 36 Pixel Tablet (2560x1600 at 320 dpi),
+  and Pixel 2 at 200% font scale. The final normalized compact command was
+  explicitly pinned to `emulator-5556` because an attached dozing Realme is
+  also ADB-authorized.
+- Manual tablet validation covers live launch/search/detail, cached offline
+  content and recovery, actual process death, rotation/resize across the 600 dp
+  breakpoint, Back, 200% text, and TalkBack focus/labels.
 
 No implementation for authentication, list management, synchronization,
 outbox processing, WorkManager, or releases was added in this milestone.
 
-## 5. Files changed during the completed slice and current planning task
+## 5. Files changed during the completed slice and baseline tasks
 
-The 2026-07-14 planning-only task added or updated:
+The 2026-07-14 planning and Plan 001 infrastructure tasks added or updated:
 
+- `.codex/agents/luna_max_testing.toml`
+- `.github/workflows/ci.yml`
 - `AGENTS.md`
 - `README.md`
 - `docs/PLANS.md`
@@ -156,13 +189,15 @@ The 2026-07-14 planning-only task added or updated:
 - `docs/plans/005-settings-adaptive-accessibility.md`
 - `docs/plans/006-production-hardening-release.md`
 
-No Android application, Gradle, schema, or test file changed during this
-planning task. The remainder of this section records the earlier completed
-search-to-series-details slice.
+No Android production, Gradle, schema, or dependency file changed during Plan
+001. Milestone 3 changed only instrumentation tests: it corrected two
+determinism assumptions, expanded the app journey, and added the on-device Room
+version-1 reopen check. The remainder of this section records the earlier
+completed search-to-series-details slice.
 
-Git metadata is absent or unusable, so the change inventory was established by
-comparing the working tree with the preserved pre-milestone snapshot at
-`/tmp/kiroku-milestone-before.CBmweB`.
+Before Plan 001 milestone 1 restored Git metadata, this change inventory was
+established by comparing the working tree with the preserved pre-milestone
+snapshot at `/tmp/kiroku-milestone-before.CBmweB`.
 
 Build and configuration:
 
@@ -213,6 +248,7 @@ Generated schema and tests:
 - `app/schemas/com.kiroku.app.core.database.KirokuDatabase/1.json`
 - all files under `app/src/test/`, including the two JSON fixtures
 - `app/src/androidTest/java/com/kiroku/app/KirokuAppJourneyTest.kt`
+- `app/src/androidTest/java/com/kiroku/app/core/database/KirokuDatabaseDeviceTest.kt`
 - `app/src/androidTest/java/com/kiroku/app/feature/search/SearchScreenTest.kt`
 - `app/src/androidTest/java/com/kiroku/app/feature/series/SeriesScreenTest.kt`
 
@@ -302,14 +338,19 @@ cache replacement, mediator refresh/append, repository cache behavior,
 debounce/state transitions, HTTP request shape, rate limits, malformed JSON,
 timeout, refused connection, compact navigation, and adaptive root decisions.
 
-Three Compose instrumentation classes also exist:
+Four instrumentation classes contain nine tests:
 
 - `KirokuAppJourneyTest`
+- `KirokuDatabaseDeviceTest`
 - `SearchScreenTest`
 - `SeriesScreenTest`
 
-Their Kotlin, resources, dex, and APK package successfully. They have not run
-on a device, so they are not counted as passing tests.
+All nine pass on the independent compact and large API 36 emulator profiles and
+again on compact at 200% font scale. Coverage includes screen states/actions,
+compact Back, large list/detail selection, saved-state restoration, cached
+offline detail with retry recovery, and real Room version-1 creation/reopen with
+ten tables and the expected identity hash. Automated device tests use fakes and
+do not call the production service.
 
 ## 9. Commands actually run and results
 
@@ -337,6 +378,110 @@ Living-plan authoring and validation on 2026-07-14:
   1 because the sandbox could not write the existing Gradle wrapper lock under
   `~/.gradle`. The approved host-cache rerun succeeded in 13 seconds; all four
   Spotless tasks were up-to-date.
+
+Plan 001 milestone 1 provenance restoration on 2026-07-14:
+
+- Pre-adoption inspection found no recoverable local metadata: `.git` was empty
+  and `rtk git status --short --branch` exited 128.
+- The non-generated working tree was preserved at
+  `/tmp/kiroku-pre-provenance-20260714T082846Z.tar.gz`; its SHA-256 is
+  `76e26d989feeaee18aeb24e15589de42b7092c433c489b2c8cd0cb718a2a8dc5`.
+- `gh repo clone miguel-rf/Kiroku /tmp/kiroku-trusted-20260714 -- --branch main
+  --single-branch` completed. The clone checked out
+  `6d33474b79db5592bf4b6458e7e9ab54b50ddb23`, and `git fsck --full` exited 0.
+- Evaluating the clone's Git directory and index against
+  `/home/miguel/Kiroku` returned clean `main...origin/main` status with all
+  untracked files included, proving the tracked tree matched and local extras
+  were ignored as intended.
+- After adopting the verified clone metadata, normal
+  `rtk git status --short --branch` succeeded from the repository root at
+  `main...origin/main`; `git rev-parse --show-toplevel`, `git rev-parse HEAD`,
+  and `git fsck --full` all exited 0.
+
+Plan 001 milestone 2 reproducible toolchain and host CI on 2026-07-14:
+
+- Official primary documentation was re-audited before editing. The current
+  releases selected and pinned by full commit SHA were checkout 7.0.0,
+  setup-java 5.5.0, and Gradle actions 6.2.0. GitHub's secure-use guidance
+  identifies a full SHA as the immutable action reference. Android's
+  `sdkmanager` documentation confirms the package-install and licence commands.
+  Gradle's version 6 documentation led to explicitly selecting the open-source
+  `basic` cache provider instead of the default enhanced component with separate
+  terms.
+- `yq '.' .github/workflows/ci.yml` exited 0 and preserved the expected event,
+  permission, concurrency, runner, and job structure. Focused `rg` scans found
+  exactly three `uses:` entries and confirmed that each uses a 40-character SHA.
+- The implementation diff plus the new workflow and pre-result documentation
+  was committed only inside `/tmp/kiroku-m2-stage.LQRcps`, producing temporary
+  validation commit
+  `31d55c41c4947db327654ed9d32536ed4fcb9e7c` and tree
+  `cc65ee5e41034ca5a19fda21377bda4d65f37c5d`. Cloning that candidate to
+  `/tmp/kiroku-m2-clean.QUMVB8` produced an empty-build checkout with clean Git
+  status and no `local.properties`, `.gradle`, root `build`, or `app/build`.
+- The first required Gradle invocation stopped before project tasks because the
+  filesystem sandbox could not write the existing wrapper lock under
+  `~/.gradle`. The approved rerun used the host cache and ran the exact command:
+
+      ./gradlew spotlessCheck testDebugUnitTest lintDebug assembleDebug \
+          assembleDebugAndroidTest assembleRelease --no-daemon --console=plain
+
+  It completed with `BUILD SUCCESSFUL in 25s`; 148 tasks were actionable, with
+  68 executed, 78 restored from cache, and two up-to-date. The only packaging
+  notice was the already-known unstripped prebuilt
+  `libandroidx.graphics.path.so`.
+- Because the canonical gate restored `testDebugUnitTest` from Gradle's build
+  cache, `./gradlew testDebugUnitTest --rerun-tasks --no-build-cache --no-daemon
+  --console=plain` was also run. It completed with `BUILD SUCCESSFUL in 1m 3s`
+  and all 33 scheduled tasks executed. The regenerated ten JUnit suites contain
+  28 tests, zero skipped, zero failures, and zero errors.
+- Lint reports `No issues found.` The debug APK is 20,957,237 bytes, the debug
+  Android-test APK is 1,126,143 bytes, and the unsigned minified release APK is
+  1,986,704 bytes. The checkout remained Git-clean after both builds. Room is
+  still version 1 with ten entities and identity hash
+  `0c7bbedd114167b238c5c1d2aad91db8`.
+- `sdkmanager --list_installed` in the clean checkout's configured environment
+  confirmed Build Tools 35.0.0, Platform 36 revision 2, and platform-tools
+  37.0.0. The GitHub-hosted workflow itself has not run because these changes
+  have not been published; no remote result is claimed.
+
+Plan 001 milestone 3 device and accessibility validation on 2026-07-14:
+
+- Installed Emulator 36.6.11 and the API 36 Google Play x86_64 system image in
+  ignored `.android-sdk`, then created Pixel 2 and Pixel Tablet AVDs. Their
+  observable configurations are 1080x1920 at 420 dpi (about 411 dp wide) and
+  2560x1600 at 320 dpi (1280 dp wide).
+- The original six tests first exposed three test-harness defects on the compact
+  AVD: ambiguous title nodes and a below-viewport LazyColumn assertion. Narrow
+  matcher/scroll corrections made the original suite pass 6/6.
+- Expanded coverage passed 9/9 with zero skips/failures on both AVDs and passed
+  9/9 again on compact with `font_scale=2.0`. The added tests prove saved-state
+  restoration, cached offline detail plus retry recovery, and real Room
+  version-1 creation/reopen with ten tables and identity hash
+  `0c7bbedd114167b238c5c1d2aad91db8`.
+- Manual tablet validation used one small read-only One Piece query. Cached
+  search/detail remained visible offline, retry recovered after connectivity,
+  selected detail survived actual process death, and rotation/resize crossed
+  between 1280 dp two-pane and 590 dp compact layouts. Back, 200% text, and
+  TalkBack focus/labels were also observed. No credentials were used.
+
+Plan 001 milestone 4 working-tree validation on 2026-07-14:
+
+- Added the two-entry API 36 Google APIs x86_64 emulator matrix to
+  `.github/workflows/ci.yml`, using Pixel 2/Pixel Tablet profiles, disabled
+  animations, Ubuntu KVM, and android-emulator-runner 2.37.0 pinned to full SHA
+  `e89f39f1abbbd05b1113a29cf4db69e7540cae5a`. `yq` parsed the workflow and all
+  seven `uses:` entries are 40-character SHAs.
+- The exact host gate completed with `BUILD SUCCESSFUL in 31s`; retained JUnit
+  XML contains 28 tests with zero failures/errors/skips, lint reports `No
+  issues found.`, and the debug, debug Android-test, and unsigned minified
+  release APKs exist.
+- An unfiltered device command selected both the interactive AVD and an attached
+  dozing Realme. The AVD completed 9/9 while seven Realme cases failed before
+  assertions with no Compose hierarchy, so that aggregate command failed. The
+  corrected `ANDROID_SERIAL=emulator-5556` rerun completed with `BUILD
+  SUCCESSFUL in 31s`; its XML records 9 tests, zero failures/errors/skips.
+- Clean candidate-checkout execution, publication, and hosted workflow evidence
+  remain pending and are not claimed here.
 
 GitHub publication on 2026-07-14:
 
@@ -368,7 +513,7 @@ Repository/diff inspection:
   snapshot were inspected. The final inventory excludes generated build
   directories and ignored `local.properties`.
 
-SDK provisioning:
+Initial SDK provisioning before the persistent emulator setup:
 
 - `/tmp/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/tmp/android-sdk --licenses`
   accepted all seven displayed agreements with explicit user authorization.
@@ -378,7 +523,9 @@ SDK provisioning:
   35.0.0, and platform-tools 37.0.0.
 - `adb version` reported 37.0.0-14910828; `aapt2 version` reported
   2.19-11948202.
-- `adb devices -l` found `6c604f95 unauthorized`; connected tests were not run.
+- At that earlier checkpoint, `adb devices -l` found `6c604f95 unauthorized`;
+  connected tests had not yet run. The later Milestone 3 evidence above
+  supersedes that availability state.
 
 Build and correction history:
 
@@ -431,14 +578,14 @@ Verification:
 
 ## 10. Known failures, blockers, and technical debt
 
-Blocking external verification:
+Plan 001 closing verification:
 
-- This directory is not a usable Git worktree. The owner-confirmed private
-  remote now contains the snapshot, but a trusted local `git status`, Git diff,
-  and clean-checkout build still require a fresh clone and comparison. The
-  temporary snapshot remains only historical evidence.
-- Compose instrumented tests cannot execute until the attached device accepts
-  this host's ADB key or an API 23+ emulator/system image is installed.
+- Local host, compact, large, large-font, manual resilience, and accessibility
+  checks are green. A clean candidate checkout and a successful hosted
+  host/compact/large workflow run remain required before Plan 001 closes.
+- The attached Realme can remain dozing behind its lock/notification surface.
+  Unpinned connected-test commands therefore discover a non-interactive target;
+  local acceptance runs must set `ANDROID_SERIAL` to the intended emulator.
 
 Later-phase blockers:
 
@@ -448,26 +595,25 @@ Later-phase blockers:
 
 Technical debt and remaining validation:
 
-- Run the three Compose test classes on compact and tablet/foldable form
-  factors, including TalkBack and large-font manual checks.
+- The complete host/device workflow is present and structurally validated, but
+  no hosted pass is claimed until the candidate is published and all three jobs
+  finish successfully.
 - The slice has explicit refresh/retry actions but no pull-to-refresh gesture.
 - No database migration test exists because there is only schema version 1;
   version 2 must introduce the first migration fixture.
 - The release APK is unsigned, as expected for a local release build. Signing,
-  CI, baseline profiles, macrobenchmarks, and production release setup belong
-  to Phase 5.
+  distribution automation, baseline profiles, macrobenchmarks, and production
+  release setup belong to Phase 5.
 
 ## 11. Next three concrete implementation steps
 
-1. Execute plan 001: clone the owner-confirmed `miguel-rf/Kiroku` remote into a
-   separate directory, compare the imported tree, adopt the verified clone as
-   the working copy, establish persistent SDK/CI setup, and repeat the complete
-   host gate there.
-2. Authorize the attached device or provision a pinned emulator and complete
-   plan 001's compact/600 dp+ instrumented, TalkBack, large-font, rotation,
-   resize, and offline/restart validation.
-3. Obtain official login token/expiry response evidence and update plan 002;
-   only then re-audit the exact stable Tink/Keystore API and begin authentication.
+1. Create a clean candidate checkout and rerun the exact host gate plus compact
+   and large `connectedDebugAndroidTest` commands against that checkout.
+2. Inspect and publish the reviewed Plan 001 candidate, then monitor and fix the
+   hosted host/compact/large workflow until every job is green.
+3. Record the immutable commit and hosted run evidence in the plan index,
+   testing guide, this handoff, and Plan 001; run the final completion audit and
+   close the plan only when no requirement remains.
 
 ## 12. Decisions that must not be revisited without new evidence
 
@@ -487,6 +633,10 @@ Technical debt and remaining validation:
 - Keep Core 1.18.0, Lifecycle 2.10.0, Coil 3.4.0, Kotlin 2.3.21, and AGP 8.13.2
   together unless a documented compatible toolchain migration is planned and
   verified through Context7 and primary release notes.
+- Keep CI actions immutable by full commit SHA and re-audit the official release
+  and security documentation before changing those pins. Retain the basic
+  Gradle cache provider unless a deliberate, documented licensing decision
+  changes it.
 - Reserve WorkManager for durable operations; use ordinary coroutines for
   foreground search and detail refresh.
 - Do not implement auth or add Tink before the login contract is confirmed and

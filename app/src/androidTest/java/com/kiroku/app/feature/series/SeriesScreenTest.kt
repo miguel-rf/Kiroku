@@ -1,10 +1,12 @@
 package com.kiroku.app.feature.series
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import com.kiroku.app.core.common.UiError
 import com.kiroku.app.core.designsystem.KirokuTheme
 import org.junit.Assert.assertTrue
@@ -35,6 +37,7 @@ class SeriesScreenTest {
         }
 
         composeRule.onNodeWithText("One Piece").assertIsDisplayed()
+        composeRule.onNode(hasScrollAction()).performScrollToIndex(2)
         composeRule.onNodeWithText("A pirate adventure").assertIsDisplayed()
         composeRule.onNodeWithContentDescription("Back").performClick()
         composeRule.runOnIdle { assertTrue(backClicked) }

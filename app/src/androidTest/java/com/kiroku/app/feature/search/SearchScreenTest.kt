@@ -3,6 +3,7 @@ package com.kiroku.app.feature.search
 import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -76,7 +77,11 @@ class SearchScreenTest {
 
         composeRule.onNodeWithText("Offline · showing saved content").assertIsDisplayed()
         composeRule
-            .onNode(hasText("One Piece") and hasClickAction())
+            .onNode(
+                hasText("One Piece") and
+                    hasClickAction() and
+                    hasSetTextAction().not(),
+            )
             .performClick()
 
         composeRule.runOnIdle {

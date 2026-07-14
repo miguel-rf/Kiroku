@@ -37,13 +37,20 @@ library author's primary documentation and record the fallback.
 ## Verified baseline
 
 As of 2026-07-14, discovery, foundation work, and the public
-search-to-series-details slice are complete on every host-executable gate.
-Twenty-eight JVM tests pass, lint has no findings, Room schema version 1 is
-exported, and debug, Android-test, and minified unsigned release APKs build. The
-three Compose instrumented test classes have not executed because the attached
-device is unauthorized and no emulator is installed. The directory is not a
-usable Git worktree, so a clean-checkout build is also unverified. The detailed
-evidence is embedded in plan 001 and `docs/PROJECT_STATE.md`.
+search-to-series-details slice are complete on the host and provisioned Android
+emulators. Twenty-eight JVM tests pass, lint has no findings, Room schema
+version 1 is exported, and debug, Android-test, and minified unsigned release
+APKs build. Four instrumented classes contain nine tests; the complete suite
+passes on separate API 36 Pixel 2 and Pixel Tablet profiles and again on the
+compact profile at 200% font scale. Manual evidence covers offline recovery,
+process death, rotation/resize, Back, TalkBack, and large text. Plan 001
+milestone 1 restored the owner-confirmed Git worktree at commit
+`6d33474b79db5592bf4b6458e7e9ab54b50ddb23`. Milestone 2 documented persistent
+SDK setup and added the pinned host workflow; Milestone 3 completed device and
+accessibility validation. The workflow now includes separate compact/large
+emulator jobs, but it has not run on GitHub because the candidate remains
+unpublished, so no remote result is claimed. The detailed evidence is embedded
+in plan 001 and `docs/PROJECT_STATE.md`.
 
 The existing app is one Gradle application module, uses a manual `AppContainer`,
 keeps Room as the source of truth, separates DTO/entity/domain/UI models, and
@@ -85,5 +92,10 @@ large layouts, and any unavoidable limitation is explicitly documented rather
 than reported as a pass.
 
 Revision note (2026-07-14): Created the living-plan convention and ordered index
-from the verified Phase 2 repository state. No application implementation was
-changed.
+from the verified Phase 2 repository state. Later the same day, recorded Plan
+001 milestone 1's verified Git restoration, then Milestone 2's persistent SDK
+instructions, pinned host workflow, and successful clean-candidate gate without
+claiming an unpublished GitHub-hosted result. Later recorded Milestone 3's
+green compact/large automated suites and complete manual accessibility/resilience
+matrix while keeping hosted CI as an explicit closing requirement. No
+production application implementation was changed.

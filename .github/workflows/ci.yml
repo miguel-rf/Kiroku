@@ -1,0 +1,132 @@
+name: Validation baseline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  host:
+    name: Host quality gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+        with:
+          cache-provider: basic
+
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager --sdk_root="${ANDROID_HOME}" \
+            "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;35.0.0"
+
+      - name: Run host quality gate
+        run: |
+          ./gradlew spotlessCheck testDebugUnitTest lintDebug assembleDebug \
+            assembleDebugAndroidTest assembleRelease --no-daemon --console=plain
+
+      - name: Verify reports and APKs
+        run: |
+          grep -Fqx "No issues found." app/build/reports/lint-results-debug.txt
+          test -s app/build/outputs/apk/debug/app-debug.apk
+          test -s app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+          test -s app/build/outputs/apk/release/app-release-unsigned.apk
+
+  device:
+    name: Device gate (${{ matrix.form-factor }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - form-factor: compact
+            profile: pixel_2
+            min_width_dp: 0
+            max_width_dp: 599
+          - form-factor: large
+            profile: pixel_tablet
+            min_width_dp: 600
+            max_width_dp: 10000
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+        with:
+          cache-provider: basic
+
+      - name: Install Android build packages
+        run: |
+          sdkmanager --sdk_root="${ANDROID_HOME}" \
+            "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;35.0.0"
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run instrumented tests
+        uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2.37.0
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          profile: ${{ matrix.profile }}
+          emulator-options: >-
+            -no-snapshot -no-window -gpu swiftshader_indirect -noaudio
+            -no-boot-anim -camera-back none -camera-front none
+          disable-animations: true
+          script: |
+            width_px="$(adb shell wm size | sed -n 's/.*size: \([0-9][0-9]*\)x.*/\1/p' | tail -n 1)"
+            density="$(adb shell wm density | sed -n 's/.*density: \([0-9][0-9]*\).*/\1/p' | tail -n 1)"
+            if [ -z "${width_px}" ] || [ -z "${density}" ] || [ "${density}" -eq 0 ]; then
+              echo "Unable to determine emulator width and density" >&2
+              exit 1
+            fi
+            width_dp=$((width_px * 160 / density))
+            echo "Emulator display: ${width_px}px at ${density}dpi = ${width_dp}dp wide"
+            if [ "${width_dp}" -lt ${{ matrix.min_width_dp }} ] || \
+               [ "${width_dp}" -gt ${{ matrix.max_width_dp }} ]; then
+              echo "Unexpected ${{ matrix.form-factor }} width: ${width_dp}dp" >&2
+              exit 1
+            fi
+            ./gradlew connectedDebugAndroidTest --no-daemon --console=plain
